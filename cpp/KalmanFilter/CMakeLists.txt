@@ -1,6 +1,6 @@
 ##
 ## @author Mohanad Youssef
-## @file KalmanFilterExercise/KalmanFilter/CMakeLists.txt
+## @file CMakeLists.txt
 ##
 
 file(GLOB LIBRARY_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
