@@ -65,7 +65,7 @@ namespace kf
         /// @param matQ process noise covariance matrix
         ///
         template<typename PredictionModelCallback>
-        void predictExt(PredictionModelCallback predictionModel, const Matrix<DIM_X, DIM_X> & matJacobF, const Matrix<DIM_X, DIM_X> & matQ)
+        void predictEkf(PredictionModelCallback predictionModel, const Matrix<DIM_X, DIM_X> & matJacobF, const Matrix<DIM_X, DIM_X> & matQ)
         {
             m_vecX = predictionModel(m_vecX);
             m_matP = matJacobF * m_matP * matJacobF.transpose() + matQ;
