@@ -1,6 +1,6 @@
 ///
 /// @author Mohanad Youssef
-/// @file KalmanFilterExercise/KalmanFilter/KalmanFilter.h
+/// @file KalmanFilter.h
 ///
 
 #ifndef __KALMAN_FILTER_LIB_H__
@@ -44,8 +44,9 @@ namespace kf
 
         ///
         /// @brief correct state of with a linear measurement model.
-        /// @param matF state transition matrix
-        /// @param matQ process noise covariance matrix
+        /// @param matZ measurement vector
+        /// @param matR measurement noise covariance matrix
+        /// @param matH measurement transition matrix (measurement model)
         ///
         void correct(const Vector<DIM_Z> & vecZ, const Matrix<DIM_Z, DIM_Z> & matR, const Matrix<DIM_Z, DIM_X> & matH)
         {
@@ -55,6 +56,37 @@ namespace kf
 
             m_vecX = m_vecX + matKk * (vecZ - (matH * m_vecX));
             m_matP = (matI - matKk * matH) * m_matP;
+        }
+
+        ///
+        /// @brief predict state with a linear process model.
+        /// @param predictionModel prediction model function callback
+        /// @param matJacobF state jacobian matrix
+        /// @param matQ process noise covariance matrix
+        ///
+        template<typename PredictionModelCallback>
+        void predictExt(PredictionModelCallback predictionModel, const Matrix<DIM_X, DIM_X> & matJacobF, const Matrix<DIM_X, DIM_X> & matQ)
+        {
+            m_vecX = predictionModel(m_vecX);
+            m_matP = matJacobF * m_matP * matJacobF.transpose() + matQ;
+        }
+
+        ///
+        /// @brief correct state of with a linear measurement model.
+        /// @param measurementModel measurement model function callback
+        /// @param matZ measurement vector
+        /// @param matR measurement noise covariance matrix
+        /// @param matJcobH measurement jacobian matrix
+        ///
+        template<typename MeasurementModelCallback>
+        void correctEkf(MeasurementModelCallback measurementModel,const Vector<DIM_Z> & vecZ, const Matrix<DIM_Z, DIM_Z> & matR, const Matrix<DIM_Z, DIM_X> & matJcobH)
+        {
+            const Matrix<DIM_X, DIM_X> matI{ Matrix<DIM_X, DIM_X>::Identity() }; // Identity matrix
+            const Matrix<DIM_Z, DIM_Z> matSk{ matJcobH * m_matP * matJcobH.transpose() + matR }; // Innovation covariance
+            const Matrix<DIM_X, DIM_Z> matKk{ m_matP * matJcobH.transpose() * matSk.inverse() }; // Kalman Gain
+
+            m_vecX = m_vecX + matKk * (vecZ - measurementModel(m_vecX));
+            m_matP = (matI - matKk * matJcobH) * m_matP;
         }
 
     private:
