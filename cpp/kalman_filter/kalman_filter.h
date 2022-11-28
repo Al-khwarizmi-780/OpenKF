@@ -1,12 +1,18 @@
 ///
-/// @author Mohanad Youssef
-/// @file KalmanFilter.h
+/// Copyright 2022 CodingCorner
+///
+/// Use of this source code is governed by an MIT - style
+/// license that can be found in the LICENSE file or at
+/// https ://opensource.org/licenses/MIT.
+///
+/// @author Mohanad Youssef <mohanad.magdy.hammad@gmail.com>
+/// @file kalman_filter.h
 ///
 
 #ifndef __KALMAN_FILTER_LIB_H__
 #define __KALMAN_FILTER_LIB_H__
 
-#include "Types.h"
+#include "types.h"
 
 namespace kf
 {

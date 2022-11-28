@@ -1,6 +1,12 @@
 ##
-## @author Mohanad Youssef
-## @file KalmanFilterExercise/Examples/StateEstimate1D/CMakeLists.txt
+## Copyright 2022 CodingCorner
+##
+## Use of this source code is governed by an MIT - style
+## license that can be found in the LICENSE file or at
+## https ://opensource.org/licenses/MIT.
+##
+## @author Mohanad Youssef <mohanad.magdy.hammad@gmail.com>
+## @file CMakeLists.h
 ##
 
 file(GLOB PROJECT_FILES
@@ -8,7 +14,7 @@ file(GLOB PROJECT_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 )
 
-set(APPLICATION_NAME ${CMAKE_PROJECT_NAME}_estimate_1D)
+set(APPLICATION_NAME ${EXAMPLE_EXECUTABLE_PREFIX}_unscented_transform)
 
 add_executable(${APPLICATION_NAME} ${PROJECT_FILES})
 
