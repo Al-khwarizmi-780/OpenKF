@@ -49,7 +49,8 @@ namespace kf
         {
             std::cout << "DIM_N : " << DIM << "\n";
             std::cout << "DIM_M : " << SIGMA_DIM << "\n";
-            std::cout << "_weights : \n" << _weights << "\n";
+            std::cout << "_weight0 : \n" << _weight0 << "\n";
+            std::cout << "_weighti : \n" << _weighti << "\n";
             std::cout << "_sigmaX : \n" << _sigmaX << "\n";
             std::cout << "_sigmaY : \n" << _sigmaY << "\n";
             std::cout << "_vecY : \n" << _vecY << "\n";
@@ -72,7 +73,8 @@ namespace kf
         const Matrix<DIM, DIM> & matPyy() const { return _matPyy; }
 
     private:
-        Matrix<1, SIGMA_DIM> _weights;  /// @brief unscented transform weights
+        float32_t _weight0;  /// @brief unscented transform weight 0 for mean
+        float32_t _weighti;  /// @brief unscented transform weight 0 for none mean samples
 
         Matrix<DIM, SIGMA_DIM> _sigmaX; /// @brief input sigma points
         Matrix<DIM, SIGMA_DIM> _sigmaY; /// @brief output sigma points
@@ -87,14 +89,12 @@ namespace kf
         ///
         void updateWeights(float32_t kappa)
         {
+            static_assert(DIM > 0, "DIM is Zero which leads to numerical issue.");
+
             const float32_t denoTerm{ kappa + static_cast<float32_t>(DIM) };
 
-            _weights(0, 0) = kappa / denoTerm;
-
-            for (int32_t i{ 1 }; i < SIGMA_DIM; ++i)
-            {
-                _weights(0, i) = 0.5F / denoTerm;
-            }
+            _weight0 = kappa / denoTerm;
+            _weighti = 0.5F / denoTerm;
         }
 
         ///
@@ -152,19 +152,21 @@ namespace kf
         void updateTransformedMeanAndCovariance()
         {
             // 1. calculate mean: \bar{y} = \sum_{i_0}^{2n} W[0, i] Y[:, i]
-            _vecY = Vector<DIM>::Zero();
-            for (size_t i{ 0 }; i < SIGMA_DIM; ++i)
+            _vecY = _weight0 * util::getColumnAt<DIM, SIGMA_DIM>(0, _sigmaY);
+            for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
-                _vecY += _weights(0, i) * util::getColumnAt<DIM, SIGMA_DIM>(i, _sigmaY); // y += W[0, i] Y[:, i]
+                _vecY += _weighti * util::getColumnAt<DIM, SIGMA_DIM>(i, _sigmaY); // y += W[0, i] Y[:, i]
             }
 
             // 2. calculate covariance: P_{yy} = \sum_{i_0}^{2n} W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
-            _matPyy = Matrix<DIM, DIM>::Zero();
-            for (size_t i{ 0 }; i < SIGMA_DIM; ++i)
-            {
-                const Vector<DIM> devYi{ util::getColumnAt<DIM, SIGMA_DIM>(i, _sigmaY) - _vecY }; // Y[:, i] - \bar{y}
+            Vector<DIM> devYi{ util::getColumnAt<DIM, SIGMA_DIM>(0, _sigmaY) - _vecY }; // Y[:, 0] - \bar{ y }
+            _matPyy = _weight0 * devYi * devYi.transpose(); // P_0 = W[0, 0] (Y[:, 0] - \bar{y}) (Y[:, 0] - \bar{y})^T
 
-                Matrix<DIM, DIM> Pi{ _weights(0, i) * devYi * devYi.transpose() }; // P_i = W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
+            for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
+            {
+                devYi = util::getColumnAt<DIM, SIGMA_DIM>(i, _sigmaY) - _vecY; // Y[:, i] - \bar{y}
+
+                const Matrix<DIM, DIM> Pi{ _weighti * devYi * devYi.transpose() }; // P_i = W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
 
                 _matPyy += Pi; // y += W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
             }
