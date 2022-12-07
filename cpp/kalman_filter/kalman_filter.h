@@ -71,9 +71,9 @@ namespace kf
         /// @param matQ process noise covariance matrix
         ///
         template<typename PredictionModelCallback>
-        void predictEkf(PredictionModelCallback predictionModel, const Matrix<DIM_X, DIM_X> & matJacobF, const Matrix<DIM_X, DIM_X> & matQ)
+        void predictEkf(PredictionModelCallback predictionModelFunc, const Matrix<DIM_X, DIM_X> & matJacobF, const Matrix<DIM_X, DIM_X> & matQ)
         {
-            m_vecX = predictionModel(m_vecX);
+            m_vecX = predictionModelFunc(m_vecX);
             m_matP = matJacobF * m_matP * matJacobF.transpose() + matQ;
         }
 
@@ -85,13 +85,13 @@ namespace kf
         /// @param matJcobH measurement jacobian matrix
         ///
         template<typename MeasurementModelCallback>
-        void correctEkf(MeasurementModelCallback measurementModel,const Vector<DIM_Z> & vecZ, const Matrix<DIM_Z, DIM_Z> & matR, const Matrix<DIM_Z, DIM_X> & matJcobH)
+        void correctEkf(MeasurementModelCallback measurementModelFunc,const Vector<DIM_Z> & vecZ, const Matrix<DIM_Z, DIM_Z> & matR, const Matrix<DIM_Z, DIM_X> & matJcobH)
         {
             const Matrix<DIM_X, DIM_X> matI{ Matrix<DIM_X, DIM_X>::Identity() }; // Identity matrix
             const Matrix<DIM_Z, DIM_Z> matSk{ matJcobH * m_matP * matJcobH.transpose() + matR }; // Innovation covariance
             const Matrix<DIM_X, DIM_Z> matKk{ m_matP * matJcobH.transpose() * matSk.inverse() }; // Kalman Gain
 
-            m_vecX = m_vecX + matKk * (vecZ - measurementModel(m_vecX));
+            m_vecX = m_vecX + matKk * (vecZ - measurementModelFunc(m_vecX));
             m_matP = (matI - matKk * matJcobH) * m_matP;
         }
 

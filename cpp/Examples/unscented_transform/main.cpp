@@ -59,9 +59,18 @@ void runExample1()
     Matrix<DIM_1, DIM_1> P;
     P << 0.5F;
 
-    kf::UnscentedTransform<DIM_1> UT(function1, x, P, 0.0F);
+    kf::UnscentedTransform<DIM_1> UT;
+    UT.compute(x, P, 0.0F);
+
+    Vector<DIM_1> vecY;
+    Matrix<DIM_1, DIM_1> matPyy;
+
+    UT.transform(function1, vecY, matPyy);
 
     UT.showSummary();
+    std::cout << "vecY: \n" << vecY << "\n";
+    std::cout << "matPyy: \n" << matPyy << "\n";
+
     std::cout << " End of Example 1: ===========================" << std::endl;
 }
 
@@ -75,8 +84,17 @@ void runExample2()
     Matrix<DIM_2, DIM_2> P;
     P << 0.1F, 0.0F, 0.0F, 0.1F;
 
-    kf::UnscentedTransform<DIM_2> UT(function2, x, P, 0.0F);
+    kf::UnscentedTransform<DIM_2> UT;
+    UT.compute(x, P, 0.0F);
+
+    Vector<DIM_2> vecY;
+    Matrix<DIM_2, DIM_2> matPyy;
+
+    UT.transform(function2, vecY, matPyy);
 
     UT.showSummary();
+    std::cout << "vecY: \n" << vecY << "\n";
+    std::cout << "matPyy: \n" << matPyy << "\n";
+
     std::cout << " End of Example 2: ===========================" << std::endl;
 }

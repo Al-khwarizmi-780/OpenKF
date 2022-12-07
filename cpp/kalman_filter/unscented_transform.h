@@ -24,26 +24,36 @@ namespace kf
     public:
         static constexpr size_t SIGMA_DIM{ (2 * DIM) + 1 };
 
-        UnscentedTransform() = delete;
+        UnscentedTransform() = default;
+        ~UnscentedTransform() {}
 
-        template<typename NonLinearFunctionCallback>
-        explicit UnscentedTransform(
-            NonLinearFunctionCallback nonlinearFunction,const Vector<DIM> & vecX, const Matrix<DIM, DIM> & matPxx, const float32_t kappa=0.0F)
+        void compute(const Vector<DIM> & vecX, const Matrix<DIM, DIM> & matPxx, const float32_t kappa = 0.0F)
         {
             // 1. calculate weights
             updateWeights(kappa);
 
             // 2. update sigma points _sigmaX
             updateSigmaPoints(vecX, matPxx, kappa);
-
-            // 3. transform sigma points X through the nonlinear model f(X) to obtain Y sigma points
-            transformSigmaPoints(nonlinearFunction);
-
-            // 4. calculate weight mean and covariance from the transformed sigma points Y and weights
-            updateTransformedMeanAndCovariance();
         }
 
-        ~UnscentedTransform() {}
+        ///
+        /// @brief algorithm to execute transforming sigma points through nonlinear function
+        /// and calculate the updated weights and covariance.
+        /// @param nonlinearFunction nonlinear function callback
+        /// @param vecY output mean vector (weighted mean vector)
+        /// @param matPyy output covariance matrix (weighted covariance matrix)
+        ///
+        template<typename NonLinearFunctionCallback>
+        void transform(NonLinearFunctionCallback nonlinearFunction, Vector<DIM> & vecY, Matrix<DIM, DIM> & matPyy)
+        {
+            Matrix<DIM, SIGMA_DIM> sigmaY;
+
+            // 3. transform sigma points X through the nonlinear model f(X) to obtain Y sigma points
+            transformSigmaPoints(nonlinearFunction, sigmaY);
+
+            // 4. calculate weight mean and covariance from the transformed sigma points Y and weights
+            updateTransformedMeanAndCovariance(sigmaY, vecY, matPyy);
+        }
 
         void showSummary()
         {
@@ -52,9 +62,6 @@ namespace kf
             std::cout << "_weight0 : \n" << _weight0 << "\n";
             std::cout << "_weighti : \n" << _weighti << "\n";
             std::cout << "_sigmaX : \n" << _sigmaX << "\n";
-            std::cout << "_sigmaY : \n" << _sigmaY << "\n";
-            std::cout << "_vecY : \n" << _vecY << "\n";
-            std::cout << "_matPyy : \n" << _matPyy << "\n";
         }
 
         Matrix<1, SIGMA_DIM> & weights() { return _weights; }
@@ -63,28 +70,14 @@ namespace kf
         Matrix<DIM, SIGMA_DIM> & sigmaX() { return _sigmaX; }
         const Matrix<DIM, SIGMA_DIM> & sigmaX() const { return _sigmaX; }
 
-        Matrix<DIM, SIGMA_DIM> & sigmaY() { return _sigmaY; }
-        const Matrix<DIM, SIGMA_DIM> & sigmaY() const { return _sigmaY; }
-
-        Vector<DIM> & vecY() { return _vecY; }
-        const Vector<DIM> & vecY() const { return _vecY; }
-
-        Matrix<DIM, DIM> & matPyy() { return _matPyy; }
-        const Matrix<DIM, DIM> & matPyy() const { return _matPyy; }
-
     private:
         float32_t _weight0;  /// @brief unscented transform weight 0 for mean
         float32_t _weighti;  /// @brief unscented transform weight 0 for none mean samples
 
         Matrix<DIM, SIGMA_DIM> _sigmaX; /// @brief input sigma points
-        Matrix<DIM, SIGMA_DIM> _sigmaY; /// @brief output sigma points
-
-        Vector<DIM> _vecY;              /// @brief output y mean vector (weighted mean vector)
-        Matrix<DIM, DIM> _matPyy;       /// @brief output Pyy covariance matrix (weighted covariance matrix)
 
         ///
         /// @brief algorithm to calculate the weights used to draw the sigma points
-        ///
         /// @param kappa design scaling parameter for sigma points selection
         ///
         void updateWeights(float32_t kappa)
@@ -136,39 +129,46 @@ namespace kf
         ///
         /// @brief transform sigma points X through the nonlinear function
         /// @param nonlinearFunction nonlinear function to be used
+        /// @param sigmaY output transformed sigma points from the nonlinear function
         ///
         template<typename NonLinearFunctionCallback>
-        void transformSigmaPoints(NonLinearFunctionCallback nonlinearFunction)
+        void transformSigmaPoints(NonLinearFunctionCallback nonlinearFunction, Matrix<DIM, SIGMA_DIM> & sigmaY)
         {
             for (size_t i{ 0 }; i < SIGMA_DIM; ++i)
             {
                 const Vector<DIM> x{ util::getColumnAt<DIM, SIGMA_DIM>(i, _sigmaX) };
                 const Vector<DIM> y{ nonlinearFunction(x) }; // y = f(x)
 
-                util::copyToColumn<DIM, SIGMA_DIM>(i, _sigmaY, y); // Y[:, i] = y
+                util::copyToColumn<DIM, SIGMA_DIM>(i, sigmaY, y); // Y[:, i] = y
             }
         }
 
-        void updateTransformedMeanAndCovariance()
+        ///
+        /// @brief calculate weighted mean and covariance given a set of sigma points with associated weights.
+        /// @param sigmaY input transformed sigma points from the nonlinear function
+        /// @param vecY output weighted mean vector
+        /// @param matPyy output weighted covariance matrix
+        ///
+        void updateTransformedMeanAndCovariance(const Matrix<DIM, SIGMA_DIM> & sigmaY, Vector<DIM> & vecY, Matrix<DIM, DIM> & matPyy)
         {
             // 1. calculate mean: \bar{y} = \sum_{i_0}^{2n} W[0, i] Y[:, i]
-            _vecY = _weight0 * util::getColumnAt<DIM, SIGMA_DIM>(0, _sigmaY);
+            vecY = _weight0 * util::getColumnAt<DIM, SIGMA_DIM>(0, sigmaY);
             for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
-                _vecY += _weighti * util::getColumnAt<DIM, SIGMA_DIM>(i, _sigmaY); // y += W[0, i] Y[:, i]
+                vecY += _weighti * util::getColumnAt<DIM, SIGMA_DIM>(i, sigmaY); // y += W[0, i] Y[:, i]
             }
 
             // 2. calculate covariance: P_{yy} = \sum_{i_0}^{2n} W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
-            Vector<DIM> devYi{ util::getColumnAt<DIM, SIGMA_DIM>(0, _sigmaY) - _vecY }; // Y[:, 0] - \bar{ y }
-            _matPyy = _weight0 * devYi * devYi.transpose(); // P_0 = W[0, 0] (Y[:, 0] - \bar{y}) (Y[:, 0] - \bar{y})^T
+            Vector<DIM> devYi{ util::getColumnAt<DIM, SIGMA_DIM>(0, sigmaY) - vecY }; // Y[:, 0] - \bar{ y }
+            matPyy = _weight0 * devYi * devYi.transpose(); // P_0 = W[0, 0] (Y[:, 0] - \bar{y}) (Y[:, 0] - \bar{y})^T
 
             for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
-                devYi = util::getColumnAt<DIM, SIGMA_DIM>(i, _sigmaY) - _vecY; // Y[:, i] - \bar{y}
+                devYi = util::getColumnAt<DIM, SIGMA_DIM>(i, sigmaY) - vecY; // Y[:, i] - \bar{y}
 
                 const Matrix<DIM, DIM> Pi{ _weighti * devYi * devYi.transpose() }; // P_i = W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
 
-                _matPyy += Pi; // y += W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
+                matPyy += Pi; // y += W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
             }
         }
     };
