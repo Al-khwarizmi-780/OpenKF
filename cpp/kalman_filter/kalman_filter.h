@@ -95,7 +95,7 @@ namespace kf
             m_matP = (matI - matKk * matJcobH) * m_matP;
         }
 
-    private:
+    protected:
         Vector<DIM_X> m_vecX{ Vector<DIM_X>::Zero() }; /// @brief estimated state vector
         Matrix<DIM_X, DIM_X> m_matP{ Matrix<DIM_X, DIM_X>::Zero() }; /// @brief state covariance matrix
     };
