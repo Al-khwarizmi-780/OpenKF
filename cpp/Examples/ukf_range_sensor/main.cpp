@@ -1,7 +1,7 @@
 ///
 /// Copyright 2022 CodingCorner
 ///
-/// Use of this source code is governed by an GPL - style
+/// Use of this source code is governed by an GPL-3.0 - style
 /// license that can be found in the LICENSE file or at
 /// https ://https://opensource.org/licenses/GPL-3.0.
 ///
