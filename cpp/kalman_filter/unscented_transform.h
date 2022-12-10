@@ -1,9 +1,9 @@
 ///
 /// Copyright 2022 CodingCorner
 ///
-/// Use of this source code is governed by an MIT - style
+/// Use of this source code is governed by an GPL - style
 /// license that can be found in the LICENSE file or at
-/// https ://opensource.org/licenses/MIT.
+/// https ://https://opensource.org/licenses/GPL-3.0.
 ///
 /// @author Mohanad Youssef <mohanad.magdy.hammad@gmail.com>
 /// @file unscented_transform.h
@@ -24,16 +24,51 @@ namespace kf
     public:
         static constexpr size_t SIGMA_DIM{ (2 * DIM) + 1 };
 
-        UnscentedTransform() = default;
-        ~UnscentedTransform() {}
-
-        void compute(const Vector<DIM> & vecX, const Matrix<DIM, DIM> & matPxx, const float32_t kappa = 0.0F)
+        UnscentedTransform()
         {
             // 1. calculate weights
             updateWeights(kappa);
+        }
 
+        ~UnscentedTransform() {}
+
+        float32_t weight0() const { return _weight0; }
+        float32_t weighti() const { return _weighti; }
+
+        ///
+        /// @brief algorithm to execute weight and sigma points calculation
+        /// @param vecX input mean vector
+        /// @param matPxx input covariance matrix
+        /// @param kappa design parameter
+        ///
+        void compute(const Vector<DIM> & vecX, const Matrix<DIM, DIM> & matPxx, const float32_t kappa = 0.0F)
+        {
             // 2. update sigma points _sigmaX
             updateSigmaPoints(vecX, matPxx, kappa);
+        }
+
+        template<size_t DIM_X>
+        void calculateWeightedMeanAndCovariance(const Matrix<DIM_X, SIGMA_DIM> & sigmaX, Vector<DIM_X> & vecX, Matrix<DIM_X, DIM_X> & matPxx)
+        {
+            // 1. calculate mean: \bar{y} = \sum_{i_0}^{2n} W[0, i] Y[:, i]
+            vecX = _weight0 * util::getColumnAt<DIM_X, SIGMA_DIM>(0, sigmaX);
+            for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
+            {
+                vecX += _weighti * util::getColumnAt<DIM_X, SIGMA_DIM>(i, sigmaX); // y += W[0, i] Y[:, i]
+            }
+
+            // 2. calculate covariance: P_{yy} = \sum_{i_0}^{2n} W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
+            Vector<DIM_X> devXi{ util::getColumnAt<DIM_X, SIGMA_DIM>(0, sigmaX) - vecX }; // Y[:, 0] - \bar{ y }
+            matPxx = _weight0 * devXi * devXi.transpose(); // P_0 = W[0, 0] (Y[:, 0] - \bar{y}) (Y[:, 0] - \bar{y})^T
+
+            for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
+            {
+                devXi = util::getColumnAt<DIM_X, SIGMA_DIM>(i, sigmaX) - vecX; // Y[:, i] - \bar{y}
+
+                const Matrix<DIM_X, DIM_X> Pi{ _weighti * devXi * devXi.transpose() }; // P_i = W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
+
+                matPxx += Pi; // y += W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
+            }
         }
 
         ///

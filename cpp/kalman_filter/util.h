@@ -1,9 +1,9 @@
 ///
 /// Copyright 2022 CodingCorner
 ///
-/// Use of this source code is governed by an MIT - style
+/// Use of this source code is governed by an GPL - style
 /// license that can be found in the LICENSE file or at
-/// https ://opensource.org/licenses/MIT.
+/// https ://https://opensource.org/licenses/GPL-3.0.
 ///
 /// @author Mohanad Youssef <mohanad.magdy.hammad@gmail.com>
 /// @file util.h
