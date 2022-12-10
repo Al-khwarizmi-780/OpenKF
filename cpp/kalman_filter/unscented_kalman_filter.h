@@ -33,6 +33,10 @@ namespace kf
 
         ~UnscentedKalmanFilter() {}
 
+        ///
+        /// @brief adding process noise covariance Q to the augmented state covariance matPa
+        /// in the middle element of the diagonal.
+        ///
         void setCovarianceQ(const Matrix<DIM_V, DIM_V> & matQ)
         {
             const size_t S_IDX{ DIM_X };
@@ -47,6 +51,10 @@ namespace kf
             }
         }
 
+        ///
+        /// @brief adding measurement noise covariance R to the augmented state covariance matPa
+        /// in the third element of the diagonal.
+        ///
         void setCovarianceR(const Matrix<DIM_N, DIM_N> & matR)
         {
             const size_t S_IDX{ DIM_X + DIM_V };
@@ -61,12 +69,19 @@ namespace kf
             }
         }
 
+        ///
+        /// @brief adding vecX and matP to the augmented state vector and covariance vecXa and matPa
+        ///
         void updateAugmentedStateAndCovariance()
         {
             updateAugmentedVecX();
             updateAugmentedMatP();
         }
 
+        ///
+        /// @brief state prediction step of the unscented Kalman filter (UKF).
+        /// @param predictionModelFunc callback to the prediction/process model function
+        ///
         template<typename PredictionModelCallback>
         void predict(PredictionModelCallback predictionModelFunc)
         {
@@ -106,6 +121,11 @@ namespace kf
             //updateAugmentedStateAndCovariance();
         }
 
+        ///
+        /// @brief measurement correction step of the unscented Kalman filter (UKF).
+        /// @param measurementModelFunc callback to the measurement model function
+        /// @param vecZ actual measurement vector.
+        ///
         template<typename MeasurementModelCallback>
         void correct(MeasurementModelCallback measurementModelFunc, const Vector<DIM_Z> & vecZ)
         {
@@ -167,6 +187,9 @@ namespace kf
         Vector<DIM_A> m_vecXa{ Vector<DIM_A>::Zero() };                 /// @brief augmented state vector (incl. process and measurement noise means)
         Matrix<DIM_A, DIM_A> m_matPa{ Matrix<DIM_A, DIM_A>::Zero() };   /// @brief augmented state covariance (incl. process and measurement noise covariances)
 
+        ///
+        /// @brief add state vector m_vecX to the augment state vector m_vecXa
+        ///
         void updateAugmentedVecX()
         {
             for (size_t i{ 0 }; i < DIM_X; ++i)
@@ -175,6 +198,9 @@ namespace kf
             }
         }
 
+        ///
+        /// @brief add covariance matrix m_matP to the augment covariance m_matPa
+        ///
         void updateAugmentedMatP()
         {
             for (size_t i{ 0 }; i < DIM_X; ++i)
@@ -240,6 +266,12 @@ namespace kf
             return sigmaXa;
         }
 
+        ///
+        /// @brief calculate the weighted mean and covariance given a set of sigma points
+        /// @param sigmaX matrix of sigma points where each column contain single sigma point
+        /// @param vecX output weighted mean
+        /// @param matP output weighted covariance
+        ///
         template<size_t DIM_X>
         void calculateWeightedMeanAndCovariance(const Matrix<DIM_X, SIGMA_DIM> & sigmaX, Vector<DIM_X> & vecX, Matrix<DIM_X, DIM_X> & matPxx)
         {
@@ -264,6 +296,14 @@ namespace kf
             }
         }
 
+        ///
+        /// @brief calculate the cross-correlation given two sets sigma points X and Y and their means x and y
+        /// @param sigmaX first matrix of sigma points where each column contain single sigma point
+        /// @param vecX mean of the first set of sigma points
+        /// @param sigmaY second matrix of sigma points where each column contain single sigma point
+        /// @param vecY mean of the second set of sigma points
+        /// @return matPxy, the cross-correlation matrix
+        ///
         Matrix<DIM_X, DIM_Z> calculateCrossCorrelation(
             const Matrix<DIM_X, SIGMA_DIM> & sigmaX, const Vector<DIM_X> & vecX,
             const Matrix<DIM_Z, SIGMA_DIM> & sigmaY, const Vector<DIM_Z> & vecY)
