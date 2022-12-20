@@ -24,12 +24,7 @@ namespace kf
     public:
         static constexpr size_t SIGMA_DIM{ (2 * DIM) + 1 };
 
-        UnscentedTransform()
-        {
-            // 1. calculate weights
-            updateWeights(kappa);
-        }
-
+        UnscentedTransform() {}
         ~UnscentedTransform() {}
 
         float32_t weight0() const { return _weight0; }
@@ -43,6 +38,9 @@ namespace kf
         ///
         void compute(const Vector<DIM> & vecX, const Matrix<DIM, DIM> & matPxx, const float32_t kappa = 0.0F)
         {
+            // 1. calculate weights
+            updateWeights(kappa);
+
             // 2. update sigma points _sigmaX
             updateSigmaPoints(vecX, matPxx, kappa);
         }
