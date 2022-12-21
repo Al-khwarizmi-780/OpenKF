@@ -1,4 +1,4 @@
-# KalmanFilter
+# OpenKF (The Kalman Filter Library)
 
 This is an open source C++ Kalman filter library based on Eigen3 library for matrix operations.
 
