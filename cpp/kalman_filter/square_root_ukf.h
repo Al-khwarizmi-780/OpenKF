@@ -17,7 +17,7 @@
 
 namespace kf
 {
-    template<int32_t DIM_X, int32_t DIM_Z, int32_t DIM_V, int32_t DIM_N>
+    template<int32_t DIM_X, int32_t DIM_Z>
     class SquareRootUKF : public KalmanFilter<DIM_X, DIM_Z>
     {
     public:
@@ -35,7 +35,7 @@ namespace kf
         Matrix<DIM_X, DIM_X> & matP() override { return (m_matP = m_matSk * m_matSk.transpose()); }
         //const Matrix<DIM_X, DIM_X> & matP() const override { return (m_matP = m_matSk * m_matSk.transpose()); }
 
-        void initialize(const Vector<DIM_X> & vecX, const Matrix<DIM_X, DIM_X> & matP, const Matrix<DIM_V, DIM_V> & matQ, const Matrix<DIM_N, DIM_N> & matR)
+        void initialize(const Vector<DIM_X> & vecX, const Matrix<DIM_X, DIM_X> & matP, const Matrix<DIM_X, DIM_X> & matQ, const Matrix<DIM_Z, DIM_Z> & matR)
         {
             m_vecX = vecX;
 
@@ -47,13 +47,13 @@ namespace kf
 
             {
                 // cholesky factorization to get matrix Q square-root
-                Eigen::LLT<Matrix<DIM_V, DIM_V>> lltOfRv(matQ);
+                Eigen::LLT<Matrix<DIM_X, DIM_X>> lltOfRv(matQ);
                 m_matRv = lltOfRv.matrixL(); // sqrt(Q)
             }
 
             {
                 // cholesky factorization to get matrix R square-root
-                Eigen::LLT<Matrix<DIM_N, DIM_N>> lltOfRn(matR);
+                Eigen::LLT<Matrix<DIM_Z, DIM_Z>> lltOfRn(matR);
                 m_matRn = lltOfRn.matrixL(); // sqrt(R)
             }
         }
@@ -73,10 +73,10 @@ namespace kf
         /// @brief setting the cholesky factorization of process noise covariance Q.
         /// @param matQ process noise covariance matrix
         ///
-        void setCovarianceQ(const Matrix<DIM_V, DIM_V> & matQ)
+        void setCovarianceQ(const Matrix<DIM_X, DIM_X> & matQ)
         {
             // cholesky factorization to get matrix Q square-root
-            Eigen::LLT<Matrix<DIM_V, DIM_V>> lltOfRv(matQ);
+            Eigen::LLT<Matrix<DIM_X, DIM_X>> lltOfRv(matQ);
             m_matRv = lltOfRv.matrixL();
         }
 
@@ -84,10 +84,10 @@ namespace kf
         /// @brief setting the cholesky factorization of measurement noise covariance R.
         /// @param matR process noise covariance matrix
         ///
-        void setCovarianceR(const Matrix<DIM_N, DIM_N> & matR)
+        void setCovarianceR(const Matrix<DIM_Z, DIM_Z> & matR)
         {
             // cholesky factorization to get matrix R square-root
-            Eigen::LLT<Matrix<DIM_N, DIM_N>> lltOfRn(matQ);
+            Eigen::LLT<Matrix<DIM_Z, DIM_Z>> lltOfRn(matQ);
             m_matRn = lltOfRn.matrixL(); // sqrt(R)
         }
 
@@ -182,8 +182,8 @@ namespace kf
         float32_t m_weighti;  /// @brief unscented transform weight i for none mean samples
 
         Matrix<DIM_X, DIM_X> m_matSk{ Matrix<DIM_X, DIM_X>::Zero() };   /// @brief augmented state covariance (incl. process and measurement noise covariances)
-        Matrix<DIM_V, DIM_V> m_matRv{ Matrix<DIM_V, DIM_V>::Zero() };   /// @brief augmented state covariance (incl. process and measurement noise covariances)
-        Matrix<DIM_N, DIM_N> m_matRn{ Matrix<DIM_N, DIM_N>::Zero() };   /// @brief augmented state covariance (incl. process and measurement noise covariances)
+        Matrix<DIM_X, DIM_X> m_matRv{ Matrix<DIM_X, DIM_X>::Zero() };   /// @brief augmented state covariance (incl. process and measurement noise covariances)
+        Matrix<DIM_Z, DIM_Z> m_matRn{ Matrix<DIM_Z, DIM_Z>::Zero() };   /// @brief augmented state covariance (incl. process and measurement noise covariances)
 
         ///
         /// @brief algorithm to calculate the weights used to draw the sigma points
@@ -315,13 +315,13 @@ namespace kf
             return matR;
         }
 
-        Matrix<SIGMA_DIM + DIM_V - 1, DIM_X>
+        Matrix<SIGMA_DIM + DIM_X - 1, DIM_X>
         buildCompoundMatrix(
             const Matrix<DIM_X, SIGMA_DIM> & matSigmaX, const Vector<DIM_X> & meanX, const Matrix<DIM_X, DIM_X> & matU)
         {
             // build compoint/joint matrix for square-root covariance update
 
-            constexpr int32_t DIM_ROW{ SIGMA_DIM + DIM_V - 1 };
+            constexpr int32_t DIM_ROW{ SIGMA_DIM + DIM_X - 1 };
             constexpr int32_t DIM_COL{ DIM_X };
 
             Matrix<DIM_ROW, DIM_COL> matC;
