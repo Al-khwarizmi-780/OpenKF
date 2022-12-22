@@ -16,9 +16,7 @@
 #include "kalman_filter/square_root_ukf.h"
 
 static constexpr size_t DIM_X{ 2 };
-static constexpr size_t DIM_V{ 2 };
 static constexpr size_t DIM_Z{ 2 };
-static constexpr size_t DIM_N{ 2 };
 
 void runExample1();
 
@@ -54,18 +52,18 @@ void runExample1()
     P << 1.0F, 0.5F,
          0.5F, 1.0F;
 
-    Matrix<DIM_V, DIM_V> Q;
+    Matrix<DIM_X, DIM_X> Q;
     Q << 0.5F, 0.0F,
          0.0F, 0.5F;
 
     Vector<DIM_Z> z;
     z << 1.2F, 1.8F;
 
-    Matrix<DIM_N, DIM_N> R;
+    Matrix<DIM_Z, DIM_Z> R;
     R << 0.3F, 0.0F,
          0.0F, 0.3F;
 
-    kf::SquareRootUKF<DIM_X, DIM_Z, DIM_V, DIM_N> srUkf;
+    kf::SquareRootUKF<DIM_X, DIM_Z> srUkf;
     srUkf.initialize(x, P, Q, R);
 
     srUkf.predict(funcF);
