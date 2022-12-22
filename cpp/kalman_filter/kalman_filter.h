@@ -3,7 +3,7 @@
 ///
 /// Use of this source code is governed by an GPL-3.0 - style
 /// license that can be found in the LICENSE file or at
-/// https ://https://opensource.org/licenses/GPL-3.0.
+/// https://opensource.org/licenses/GPL-3.0
 ///
 /// @author Mohanad Youssef <mohanad.magdy.hammad@gmail.com>
 /// @file kalman_filter.h
@@ -31,11 +31,11 @@ namespace kf
 
         }
 
-        Vector<DIM_X> & vecX() { return m_vecX; }
-        const Vector<DIM_X> & vecX() const { return m_vecX; }
+        virtual Vector<DIM_X> & vecX() { return m_vecX; }
+        virtual const Vector<DIM_X> & vecX() const { return m_vecX; }
 
-        Matrix<DIM_X, DIM_X> & matP() { return m_matP; }
-        const Matrix<DIM_X, DIM_X> & matP() const { return m_matP; }
+        virtual Matrix<DIM_X, DIM_X> & matP() { return m_matP; }
+        virtual const Matrix<DIM_X, DIM_X> & matP() const { return m_matP; }
 
         ///
         /// @brief predict state with a linear process model.

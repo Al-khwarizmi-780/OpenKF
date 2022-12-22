@@ -3,7 +3,7 @@
 ///
 /// Use of this source code is governed by an GPL-3.0 - style
 /// license that can be found in the LICENSE file or at
-/// https ://https://opensource.org/licenses/GPL-3.0.
+/// https://opensource.org/licenses/GPL-3.0
 ///
 /// @author Mohanad Youssef <mohanad.magdy.hammad@gmail.com>
 /// @file util.h
@@ -56,6 +56,55 @@ namespace util
         }
 
         return vecXi;
+    }
+
+    template<size_t ROWS, size_t COLS, size_t N_ROWS, size_t N_COLS>
+    Matrix<N_ROWS, N_COLS> getBlock(const Matrix<ROWS, COLS> & matA, int32_t startRowIdx, int32_t startColIdx)
+    {
+        Matrix<N_ROWS, N_COLS> matB;
+
+        for (int32_t i = startRowIdx; i < startRowIdx + N_ROWS; ++i)
+        {
+            for (int32_t j = startColIdx; j < startColIdx + N_COLS; ++j)
+            {
+                matB(i - startRowIdx, j - startColIdx) = matA(i, j);
+            }
+        }
+
+        return matB;
+    }
+
+    template<size_t ROWS, size_t COLS_L, size_t COLS_W>
+    Matrix<ROWS, COLS_L> cholupdate(Matrix<ROWS, COLS_L> matL, Matrix<ROWS, COLS_W> matW, float32_t alpha)
+    {
+        Matrix<ROWS, COLS_L> matLo;
+
+        for (int32_t i{ 0 }; i < COLS_W; ++i)
+        {
+            matLo = matL;
+
+            float32_t b{ 1.0F };
+
+            for (int32_t j{ 0 }; j < ROWS; ++j)
+            {
+                const float32_t ljjPow2{ matL(j, j) * matL(j, j) };
+                const float32_t wjiPow2{ matW(j, i) * matW(j, i) };
+                const float32_t upsilon{ (ljjPow2 * b) + (alpha * wjiPow2) };
+
+                matLo(j, j) = std::sqrt(ljjPow2 + ((alpha / b) * wjiPow2));
+
+                for (int32_t k{ j + 1 }; k < ROWS; ++k)
+                {
+                    matW(k, i) -= (matW(j, i) / matL(j, j)) * matL(k, j);
+                    matLo(k, j) = ((matLo(j, j) / matL(j, j)) * matL(k, j)) + (matLo(j, j) * alpha * matW(j, i) * matW(k, i) / upsilon);
+                }
+
+                b += alpha * (wjiPow2 / ljjPow2);
+            }
+
+            matL = matLo;
+        }
+        return matLo;
     }
 
     template<size_t ROWS, size_t COLS>
