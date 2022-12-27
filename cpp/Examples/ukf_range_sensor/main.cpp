@@ -22,9 +22,9 @@ static constexpr size_t DIM_N{ 2 };
 
 void runExample1();
 
-Vector<DIM_X> funcF(const Vector<DIM_X> & x, const Vector<DIM_V> & v)
+kf::Vector<DIM_X> funcF(const kf::Vector<DIM_X> & x, const kf::Vector<DIM_V> & v)
 {
-    Vector<DIM_X> y;
+    kf::Vector<DIM_X> y;
     y[0] = x[0] + x[2] + v[0];
     y[1] = x[1] + x[3] + v[1];
     y[2] = x[2] + v[2];
@@ -32,15 +32,15 @@ Vector<DIM_X> funcF(const Vector<DIM_X> & x, const Vector<DIM_V> & v)
     return y;
 }
 
-Vector<DIM_Z> funcH(const Vector<DIM_X> & x, const Vector<DIM_N> & n)
+kf::Vector<DIM_Z> funcH(const kf::Vector<DIM_X> & x, const kf::Vector<DIM_N> & n)
 {
-    Vector<DIM_Z> y;
+    kf::Vector<DIM_Z> y;
 
-    float32_t px{ x[0] + n[0] };
-    float32_t py{ x[1] + n[1] };
+    kf::float32_t px{ x[0] + n[0] };
+    kf::float32_t py{ x[1] + n[1] };
 
     y[0] = std::sqrt((px * px) + (py * py));
-    y[1] = std::atan(py / (px + std::numeric_limits<float32_t>::epsilon()));
+    y[1] = std::atan(py / (px + std::numeric_limits<kf::float32_t>::epsilon()));
     return y;
 }
 
@@ -56,25 +56,25 @@ void runExample1()
 {
     std::cout << " Start of Example 1: ===========================" << std::endl;
 
-    Vector<DIM_X> x;
+    kf::Vector<DIM_X> x;
     x << 2.0F, 1.0F, 0.0F, 0.0F;
 
-    Matrix<DIM_X, DIM_X> P;
+    kf::Matrix<DIM_X, DIM_X> P;
     P << 0.01F, 0.0F, 0.0F, 0.0F,
          0.0F, 0.01F, 0.0F, 0.0F,
          0.0F, 0.0F, 0.05F, 0.0F,
          0.0F, 0.0F, 0.0F, 0.05F;
 
-    Matrix<DIM_V, DIM_V> Q;
+    kf::Matrix<DIM_V, DIM_V> Q;
     Q << 0.05F, 0.0F, 0.0F, 0.0F,
         0.0F, 0.05F, 0.0F, 0.0F,
         0.0F, 0.0F, 0.1F, 0.0F,
         0.0F, 0.0F, 0.0F, 0.1F;
 
-    Matrix<DIM_N, DIM_N> R;
+    kf::Matrix<DIM_N, DIM_N> R;
     R << 0.01F, 0.0F, 0.0F, 0.01F;
 
-    Vector<DIM_Z> z;
+    kf::Vector<DIM_Z> z;
     z << 2.5, 0.05;
 
     kf::UnscentedKalmanFilter<DIM_X, DIM_Z, DIM_V, DIM_N> ukf;
@@ -85,7 +85,7 @@ void runExample1()
     ukf.setCovarianceQ(Q);
     ukf.setCovarianceR(R);
 
-    ukf.predict(funcF);
+    ukf.predictUKF(funcF);
 
     std::cout << "x = \n" << ukf.vecX() << std::endl;
     std::cout << "P = \n" << ukf.matP() << std::endl;
@@ -100,7 +100,7 @@ void runExample1()
     //      [0.05  0.00  0.15  0.00]
     //      [0.00  0.05  0.00  0.15]]
 
-    ukf.correct(funcH, z);
+    ukf.correctUKF(funcH, z);
 
     std::cout << "x = \n" << ukf.vecX() << std::endl;
     std::cout << "P = \n" << ukf.matP() << std::endl;

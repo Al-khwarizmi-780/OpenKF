@@ -34,16 +34,16 @@ void runExample1()
 {
     std::cout << " Start of Example 1: ===========================" << std::endl;
 
-    Matrix<3, 3> A;
+    kf::Matrix<3, 3> A;
     A << 3.0, 2.0, 1.0,
          2.0, 3.0, 4.0,
          1.0, 4.0, 3.0;
 
-    Matrix<2, 3> B;
+    kf::Matrix<2, 3> B;
     B << 5.0, 6.0, 7.0,
          8.0, 9.0, 10.0;
 
-    util::JointRows<3, 2, 3> jmat(A, B);
+    kf::util::JointRows<3, 2, 3> jmat(A, B);
     auto AB = jmat.jointMatrix();
 
     std::cout << "Joint Rows: AB = \n" << AB << std::endl;
@@ -55,17 +55,17 @@ void runExample2()
 {
     std::cout << " Start of Example 2: ===========================" << std::endl;
 
-    Matrix<3, 3> A;
+    kf::Matrix<3, 3> A;
     A << 3.0, 2.0, 1.0,
         2.0, 3.0, 4.0,
         1.0, 4.0, 3.0;
 
-    Matrix<3, 2> B;
+    kf::Matrix<3, 2> B;
     B << 5.0, 6.0,
          7.0, 8.0,
          9.0, 10.0;
 
-    util::JointCols<3, 3, 2> jmat(A, B);
+    kf::util::JointCols<3, 3, 2> jmat(A, B);
     auto AB = jmat.jointMatrix();
 
     std::cout << "Joint Columns: AB = \n" << AB << std::endl;
@@ -77,15 +77,15 @@ void runExample3()
 {
     std::cout << " Start of Example 2: ===========================" << std::endl;
 
-    Matrix<3, 3> A;
+    kf::Matrix<3, 3> A;
     A << 1.0, -2.0, 1.0,
         0.0, 1.0, 6.0,
         0.0, 0.0, 1.0;
 
-    Matrix<3, 1> b;
+    kf::Matrix<3, 1> b;
     b << 4.0, -1.0, 2.0;
 
-    auto x = util::backwardSubstitute<3, 1>(A, b);
+    auto x = kf::util::backwardSubstitute<3, 1>(A, b);
 
     std::cout << "Backward Substitution: x = \n" << x << std::endl;
 
@@ -96,15 +96,15 @@ void runExample4()
 {
     std::cout << " Start of Example 2: ===========================" << std::endl;
 
-    Matrix<3, 3> A;
+    kf::Matrix<3, 3> A;
     A << 1.0, 0.0, 0.0,
          -2.0, 1.0, 0.0,
          1.0, 6.0, 1.0;
 
-    Matrix<3, 1> b;
+    kf::Matrix<3, 1> b;
     b << 4.0, -1.0, 2.0;
 
-    auto x = util::forwardSubstitute<3, 1>(A, b);
+    auto x = kf::util::forwardSubstitute<3, 1>(A, b);
 
     std::cout << "Forward Substitution: x = \n" << x << std::endl;
 
