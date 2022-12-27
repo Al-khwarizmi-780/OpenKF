@@ -19,7 +19,7 @@ The library has generic template based classes for most of Kalman filter variant
 
 One can build the library and install the files in the system to be used in different external projects.
 
-You just need to execute the batch file ``bootstrap-openkf.bat`` from a **PowerShell Terminal (in Administratior Mode)**.
+You just need to execute the batch file ``bootstrap-openkf.bat`` from a PowerShell Terminal (in Administrator Mode).
 
 ```batch
 >> ./bootstrap-openkf.bat
