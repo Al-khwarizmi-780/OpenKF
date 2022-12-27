@@ -23,16 +23,16 @@ static constexpr size_t DIM_2{ 2 };
 void runExample1();
 void runExample2();
 
-Vector<DIM_1> function1(const Vector<DIM_1> & x)
+kf::Vector<DIM_1> function1(const kf::Vector<DIM_1> & x)
 {
-    Vector<DIM_1> y;
+    kf::Vector<DIM_1> y;
     y[0] = x[0] * x[0];
     return y;
 }
 
-Vector<DIM_2> function2(const Vector<DIM_2> & x)
+kf::Vector<DIM_2> function2(const kf::Vector<DIM_2> & x)
 {
-    Vector<DIM_2> y;
+    kf::Vector<DIM_2> y;
     y[0] = x[0] * x[0];
     y[1] = x[1] * x[1];
     return y;
@@ -53,17 +53,17 @@ void runExample1()
 {
     std::cout << " Start of Example 1: ===========================" << std::endl;
 
-    Vector<DIM_1> x;
+    kf::Vector<DIM_1> x;
     x << 0.0F;
 
-    Matrix<DIM_1, DIM_1> P;
+    kf::Matrix<DIM_1, DIM_1> P;
     P << 0.5F;
 
     kf::UnscentedTransform<DIM_1> UT;
     UT.compute(x, P, 0.0F);
 
-    Vector<DIM_1> vecY;
-    Matrix<DIM_1, DIM_1> matPyy;
+    kf::Vector<DIM_1> vecY;
+    kf::Matrix<DIM_1, DIM_1> matPyy;
 
     UT.transform(function1, vecY, matPyy);
 
@@ -78,17 +78,17 @@ void runExample2()
 {
     std::cout << " Start of Example 2: ===========================" << std::endl;
 
-    Vector<DIM_2> x;
+    kf::Vector<DIM_2> x;
     x << 2.0F, 1.0F;
 
-    Matrix<DIM_2, DIM_2> P;
+    kf::Matrix<DIM_2, DIM_2> P;
     P << 0.1F, 0.0F, 0.0F, 0.1F;
 
     kf::UnscentedTransform<DIM_2> UT;
     UT.compute(x, P, 0.0F);
 
-    Vector<DIM_2> vecY;
-    Matrix<DIM_2, DIM_2> matPyy;
+    kf::Vector<DIM_2> vecY;
+    kf::Matrix<DIM_2, DIM_2> matPyy;
 
     UT.transform(function2, vecY, matPyy);
 

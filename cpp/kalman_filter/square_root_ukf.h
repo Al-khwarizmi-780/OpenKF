@@ -96,7 +96,7 @@ namespace kf
         /// @param predictionModelFunc callback to the prediction/process model function
         ///
         template<typename PredictionModelCallback>
-        void predict(PredictionModelCallback predictionModelFunc)
+        void predictSRUKF(PredictionModelCallback predictionModelFunc)
         {
             const float32_t kappa{ static_cast<float32_t>(3 - DIM_X) };
 
@@ -127,7 +127,7 @@ namespace kf
         /// @param vecZ actual measurement vector.
         ///
         template<typename MeasurementModelCallback>
-        void correct(MeasurementModelCallback measurementModelFunc, const Vector<DIM_Z> & vecZ)
+        void correctSRUKF(MeasurementModelCallback measurementModelFunc, const Vector<DIM_Z> & vecZ)
         {
             const float32_t kappa{ static_cast<float32_t>(3 - DIM_X) };
 

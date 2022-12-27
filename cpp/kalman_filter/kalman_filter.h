@@ -42,7 +42,7 @@ namespace kf
         /// @param matF state transition matrix
         /// @param matQ process noise covariance matrix
         ///
-        void predict(const Matrix<DIM_X, DIM_X> & matF, const Matrix<DIM_X, DIM_X> & matQ)
+        void predictLKF(const Matrix<DIM_X, DIM_X> & matF, const Matrix<DIM_X, DIM_X> & matQ)
         {
             m_vecX = matF * m_vecX;
             m_matP = matF * m_matP * matF.transpose() + matQ;
@@ -54,7 +54,7 @@ namespace kf
         /// @param matR measurement noise covariance matrix
         /// @param matH measurement transition matrix (measurement model)
         ///
-        void correct(const Vector<DIM_Z> & vecZ, const Matrix<DIM_Z, DIM_Z> & matR, const Matrix<DIM_Z, DIM_X> & matH)
+        void correctLKF(const Vector<DIM_Z> & vecZ, const Matrix<DIM_Z, DIM_Z> & matR, const Matrix<DIM_Z, DIM_X> & matH)
         {
             const Matrix<DIM_X, DIM_X> matI{ Matrix<DIM_X, DIM_X>::Identity() }; // Identity matrix
             const Matrix<DIM_Z, DIM_Z> matSk{ matH * m_matP * matH.transpose() + matR }; // Innovation covariance

@@ -20,7 +20,7 @@ static constexpr size_t DIM_Z{ 2 };
 
 void runExample1();
 
-Vector<DIM_X> funcF(const Vector<DIM_X> & x)
+kf::Vector<DIM_X> funcF(const kf::Vector<DIM_X> & x)
 {
     return x;
 }
@@ -45,28 +45,28 @@ void runExample1()
     //z = np.array([1.2, 1.8])
     //R = np.array([[0.3, 0.0], [0.0, 0.3]])
 
-    Vector<DIM_X> x;
+    kf::Vector<DIM_X> x;
     x << 1.0F, 2.0F;
 
-    Matrix<DIM_X, DIM_X> P;
+    kf::Matrix<DIM_X, DIM_X> P;
     P << 1.0F, 0.5F,
          0.5F, 1.0F;
 
-    Matrix<DIM_X, DIM_X> Q;
+    kf::Matrix<DIM_X, DIM_X> Q;
     Q << 0.5F, 0.0F,
          0.0F, 0.5F;
 
-    Vector<DIM_Z> z;
+    kf::Vector<DIM_Z> z;
     z << 1.2F, 1.8F;
 
-    Matrix<DIM_Z, DIM_Z> R;
+    kf::Matrix<DIM_Z, DIM_Z> R;
     R << 0.3F, 0.0F,
          0.0F, 0.3F;
 
     kf::SquareRootUKF<DIM_X, DIM_Z> srUkf;
     srUkf.initialize(x, P, Q, R);
 
-    srUkf.predict(funcF);
+    srUkf.predictSRUKF(funcF);
 
     std::cout << "x = \n" << srUkf.vecX() << std::endl;
     std::cout << "P = \n" << srUkf.matP() << std::endl;
@@ -79,7 +79,7 @@ void runExample1()
     //    [[1.5 0.5]
     //     [0.5 1.5]]
 
-    srUkf.correct(funcF, z);
+    srUkf.correctSRUKF(funcF, z);
 
     std::cout << "x = \n" << srUkf.vecX() << std::endl;
     std::cout << "P = \n" << srUkf.matP() << std::endl;

@@ -83,7 +83,7 @@ namespace kf
         /// @param predictionModelFunc callback to the prediction/process model function
         ///
         template<typename PredictionModelCallback>
-        void predict(PredictionModelCallback predictionModelFunc)
+        void predictUKF(PredictionModelCallback predictionModelFunc)
         {
             // self.x_a[:self.dim_x] = x
             // self.P_a[:self.dim_x, : self.dim_x] = P
@@ -127,7 +127,7 @@ namespace kf
         /// @param vecZ actual measurement vector.
         ///
         template<typename MeasurementModelCallback>
-        void correct(MeasurementModelCallback measurementModelFunc, const Vector<DIM_Z> & vecZ)
+        void correctUKF(MeasurementModelCallback measurementModelFunc, const Vector<DIM_Z> & vecZ)
         {
             // self.x_a[:self.dim_x] = x
             // self.P_a[:self.dim_x, : self.dim_x] = P
