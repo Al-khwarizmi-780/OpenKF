@@ -19,7 +19,7 @@ The library has generic template based classes for most of Kalman filter variant
 
 One can build the library and install the files in the system to be used in different external projects.
 
-You just need to execute the batch file ``bootstrap-openkf.bat`` from a **_Administrator PowerShell Terminal_**.
+You just need to execute the batch file ``bootstrap-openkf.bat`` from a **PowerShell Terminal (in Administratior Mode)**.
 
 ```batch
 >> ./bootstrap-openkf.bat
@@ -32,7 +32,7 @@ After that, the OpenKF library is ready to be used in external project.
 In the **_CMakeLists.txt_** you must include these three lines of code:
 
 ````cmake
-find_package(OpenKF)
+find_package(OpenKF REQUIRED)
 target_link_libraries(<your-project-name> PUBLIC OpenKF)
 target_include_directories(<your-project-name> PUBLIC ${OPENKF_INCLUDE_DIR})
 ````
