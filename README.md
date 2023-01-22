@@ -13,6 +13,8 @@ The library has generic template based classes for most of Kalman filter variant
 
 **Author**: Mohanad Youssef ([codingcorner.org](https://codingcorner.org/))
 
+**YouTube Channel**: [https://www.youtube.com/@al-khwarizmi](https://www.youtube.com/@al-khwarizmi) 
+
 ![](res/images/codingcorner_cover_image.png)
 
 ## Getting Started
