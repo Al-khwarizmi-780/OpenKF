@@ -1,5 +1,5 @@
 ///
-/// Copyright 2022 CodingCorner
+/// Copyright 2022 Mohanad Youssef (Al-khwarizmi)
 ///
 /// Use of this source code is governed by an GPL-3.0 - style
 /// license that can be found in the LICENSE file or at
@@ -9,8 +9,8 @@
 /// @file square_root_ukf.h
 ///
 
-#ifndef __SQUARE_ROOT_UNSCENTED_KALMAN_FILTER_LIB_H__
-#define __SQUARE_ROOT_UNSCENTED_KALMAN_FILTER_LIB_H__
+#ifndef SQUARE_ROOT_UNSCENTED_KALMAN_FILTER_LIB_H
+#define SQUARE_ROOT_UNSCENTED_KALMAN_FILTER_LIB_H
 
 #include "util.h"
 #include "kalman_filter.h"
@@ -350,4 +350,4 @@ namespace kf
     };
 }
 
-#endif // __UNSCENTED_KALMAN_FILTER_LIB_H__
+#endif // UNSCENTED_KALMAN_FILTER_LIB_H

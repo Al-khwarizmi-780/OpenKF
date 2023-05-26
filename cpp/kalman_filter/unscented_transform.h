@@ -1,5 +1,5 @@
 ///
-/// Copyright 2022 CodingCorner
+/// Copyright 2022 Mohanad Youssef (Al-khwarizmi)
 ///
 /// Use of this source code is governed by an GPL-3.0 - style
 /// license that can be found in the LICENSE file or at
@@ -9,8 +9,8 @@
 /// @file unscented_transform.h
 ///
 
-#ifndef __UNSCENTED_TRANSFORM_H__
-#define __UNSCENTED_TRANSFORM_H__
+#ifndef UNSCENTED_TRANSFORM_H
+#define UNSCENTED_TRANSFORM_H
 
 #include "types.h"
 #include "util.h"
@@ -207,4 +207,4 @@ namespace kf
     };
 }
 
-#endif // __UNSCENTED_TRANSFORM_H__
+#endif // UNSCENTED_TRANSFORM_H

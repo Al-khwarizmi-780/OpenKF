@@ -1,5 +1,5 @@
 ///
-/// Copyright 2022 CodingCorner
+/// Copyright 2022 Mohanad Youssef (Al-khwarizmi)
 ///
 /// Use of this source code is governed by an GPL-3.0 - style
 /// license that can be found in the LICENSE file or at
@@ -9,8 +9,8 @@
 /// @file types.h
 ///
 
-#ifndef __KALMAN_FILTER_TYPES_H__
-#define __KALMAN_FILTER_TYPES_H__
+#ifndef OPENKF_TYPES_H
+#define OPENKF_TYPES_H
 
 #include <stdint.h>
 #include <Eigen/Dense>
@@ -26,5 +26,4 @@ namespace kf
 	using Vector = Eigen::Matrix<float32_t, ROW, 1>;
 }
 
-
-#endif // __KALMAN_FILTER_TYPES_H__
+#endif // OPENKF_TYPES_H
