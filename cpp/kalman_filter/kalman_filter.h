@@ -1,5 +1,5 @@
 ///
-/// Copyright 2022 CodingCorner
+/// Copyright 2022 Mohanad Youssef (Al-khwarizmi)
 ///
 /// Use of this source code is governed by an GPL-3.0 - style
 /// license that can be found in the LICENSE file or at
@@ -9,8 +9,8 @@
 /// @file kalman_filter.h
 ///
 
-#ifndef __KALMAN_FILTER_LIB_H__
-#define __KALMAN_FILTER_LIB_H__
+#ifndef KALMAN_FILTER_LIB_H
+#define KALMAN_FILTER_LIB_H
 
 #include "types.h"
 
@@ -101,4 +101,4 @@ namespace kf
     };
 }
 
-#endif // __KALMAN_FILTER_LIB_H__
+#endif // KALMAN_FILTER_LIB_H
