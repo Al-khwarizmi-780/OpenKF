@@ -31,4 +31,4 @@ enable_language(C CXX)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 add_subdirectory(kalman_filter)
-#add_subdirectory(Examples)
+add_subdirectory(Examples)

@@ -24,7 +24,7 @@ namespace kf
         static constexpr int32_t DIM_A{ DIM_X + DIM_V + DIM_N };
         static constexpr int32_t SIGMA_DIM{ 2 * DIM_A + 1 };
 
-        UnscentedKalmanFilter() : KalmanFilter()
+       UnscentedKalmanFilter() : KalmanFilter<DIM_X, DIM_Z>()
         {
             // 1. calculate weights
             const float32_t kappa{ static_cast<float32_t>(3 - DIM_A) };
@@ -95,10 +95,10 @@ namespace kf
             Matrix<DIM_A, SIGMA_DIM> matSigmaXa{ calculateSigmaPoints(m_vecXa, m_matPa, kappa) };
 
             // xx_sigmas = xa_sigmas[:self.dim_x, :]
-            Matrix<DIM_X, SIGMA_DIM> sigmaXx{ matSigmaXa.block<DIM_X, SIGMA_DIM>(0, 0) };
+            Matrix<DIM_X, SIGMA_DIM> sigmaXx{ matSigmaXa.template block<DIM_X, SIGMA_DIM>(0, 0)};
 
             // xv_sigmas = xa_sigmas[self.dim_x : self.dim_x + self.dim_v, :]
-            Matrix<DIM_V, SIGMA_DIM> sigmaXv{ matSigmaXa.block<DIM_V, SIGMA_DIM>(DIM_X, 0) };
+            Matrix<DIM_V, SIGMA_DIM> sigmaXv{ matSigmaXa.template block<DIM_V, SIGMA_DIM>(DIM_X, 0) };
 
             // y_sigmas = np.zeros((self.dim_x, self.n_sigma))
             // for i in range(self.n_sigma):
@@ -114,7 +114,7 @@ namespace kf
             }
 
             // y, Pyy = self.calculate_mean_and_covariance(y_sigmas)
-            calculateWeightedMeanAndCovariance<DIM_X>(sigmaXx, m_vecX, m_matP);
+            calculateWeightedMeanAndCovariance(sigmaXx, m_vecX, m_matP);
 
             //// self.x_a[:self.dim_x] = y
             //// self.P_a[:self.dim_x, : self.dim_x] = Pyy
@@ -139,10 +139,10 @@ namespace kf
             Matrix<DIM_A, SIGMA_DIM> matSigmaXa{ calculateSigmaPoints(m_vecXa, m_matPa, kappa) };
 
             // xx_sigmas = xa_sigmas[:self.dim_x, :]
-            Matrix<DIM_X, SIGMA_DIM> sigmaXx{ matSigmaXa.block<DIM_X, SIGMA_DIM>(0, 0) };
+            Matrix<DIM_X, SIGMA_DIM> sigmaXx{ matSigmaXa.template block<DIM_X, SIGMA_DIM>(0, 0) };
 
             // xn_sigmas = xa_sigmas[self.dim_x + self.dim_v :, :]
-            Matrix<DIM_N, SIGMA_DIM> sigmaXn{ matSigmaXa.block<DIM_N, SIGMA_DIM>(DIM_X + DIM_V, 0) };
+            Matrix<DIM_N, SIGMA_DIM> sigmaXn{ matSigmaXa.template block<DIM_N, SIGMA_DIM>(DIM_X + DIM_V, 0) };
 
             // y_sigmas = np.zeros((self.dim_z, self.n_sigma))
             // for i in range(self.n_sigma) :
@@ -272,25 +272,25 @@ namespace kf
         /// @param vecX output weighted mean
         /// @param matP output weighted covariance
         ///
-        template<size_t DIM_X>
-        void calculateWeightedMeanAndCovariance(const Matrix<DIM_X, SIGMA_DIM> & sigmaX, Vector<DIM_X> & vecX, Matrix<DIM_X, DIM_X> & matPxx)
+       template<int DIM>
+        void calculateWeightedMeanAndCovariance(const Matrix<DIM, SIGMA_DIM> & sigmaX, Vector<DIM> & vecX, Matrix<DIM, DIM> & matPxx)
         {
             // 1. calculate mean: \bar{y} = \sum_{i_0}^{2n} W[0, i] Y[:, i]
-            vecX = m_weight0 * util::getColumnAt<DIM_X, SIGMA_DIM>(0, sigmaX);
+            vecX = m_weight0 * util::getColumnAt<DIM, SIGMA_DIM>(0, sigmaX);
             for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
-                vecX += m_weighti * util::getColumnAt<DIM_X, SIGMA_DIM>(i, sigmaX); // y += W[0, i] Y[:, i]
+                vecX += m_weighti * util::getColumnAt<DIM, SIGMA_DIM>(i, sigmaX); // y += W[0, i] Y[:, i]
             }
 
             // 2. calculate covariance: P_{yy} = \sum_{i_0}^{2n} W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
-            Vector<DIM_X> devXi{ util::getColumnAt<DIM_X, SIGMA_DIM>(0, sigmaX) - vecX }; // Y[:, 0] - \bar{ y }
+            Vector<DIM> devXi{ util::getColumnAt<DIM, SIGMA_DIM>(0, sigmaX) - vecX }; // Y[:, 0] - \bar{ y }
             matPxx = m_weight0 * devXi * devXi.transpose(); // P_0 = W[0, 0] (Y[:, 0] - \bar{y}) (Y[:, 0] - \bar{y})^T
 
             for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
-                devXi = util::getColumnAt<DIM_X, SIGMA_DIM>(i, sigmaX) - vecX; // Y[:, i] - \bar{y}
+                devXi = util::getColumnAt<DIM, SIGMA_DIM>(i, sigmaX) - vecX; // Y[:, i] - \bar{y}
 
-                const Matrix<DIM_X, DIM_X> Pi{ m_weighti * devXi * devXi.transpose() }; // P_i = W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
+                const Matrix<DIM, DIM> Pi{ m_weighti * devXi * devXi.transpose() }; // P_i = W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
 
                 matPxx += Pi; // y += W[0, i] (Y[:, i] - \bar{y}) (Y[:, i] - \bar{y})^T
             }

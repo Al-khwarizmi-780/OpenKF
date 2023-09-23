@@ -97,9 +97,6 @@ namespace kf
             std::cout << "_sigmaX : \n" << _sigmaX << "\n";
         }
 
-        Matrix<1, SIGMA_DIM> & weights() { return _weights; }
-        const Matrix<1, SIGMA_DIM> & weights() const { return _weights; }
-
         Matrix<DIM, SIGMA_DIM> & sigmaX() { return _sigmaX; }
         const Matrix<DIM, SIGMA_DIM> & sigmaX() const { return _sigmaX; }
 

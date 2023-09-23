@@ -23,7 +23,7 @@ namespace kf
     public:
         static constexpr int32_t SIGMA_DIM{ 2 * DIM_X + 1 };
 
-        SquareRootUKF() : KalmanFilter()
+       SquareRootUKF() : KalmanFilter<DIM_X, DIM_Z>()
         {
             // calculate weights
             const float32_t kappa{ static_cast<float32_t>(3 - DIM_X) };
@@ -87,7 +87,7 @@ namespace kf
         void setCovarianceR(const Matrix<DIM_Z, DIM_Z> & matR)
         {
             // cholesky factorization to get matrix R square-root
-            Eigen::LLT<Matrix<DIM_Z, DIM_Z>> lltOfRn(matQ);
+            Eigen::LLT<Matrix<DIM_Z, DIM_Z>> lltOfRn(matR);
             m_matRn = lltOfRn.matrixL(); // sqrt(R)
         }
 
@@ -301,7 +301,7 @@ namespace kf
             // might need to reimplement QR factorization it as it seems to use dynamic memory allocation
             Matrix<DIM, DIM> matR{
                 util::getBlock<DIM_ROW, DIM_COL, DIM, DIM>(
-                    qr.matrixQR().triangularView<Eigen::Upper>(), 0, 0)
+                    qr.matrixQR().template triangularView<Eigen::Upper>(), 0, 0)
             };
 
             // Rank - 1 cholesky update
