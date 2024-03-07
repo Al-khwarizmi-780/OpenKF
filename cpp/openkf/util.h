@@ -85,7 +85,10 @@ namespace kf
                 for (int32_t j = i; j < COLS; ++j)
                 {
                     matB(i, j) = matA(i, j);
-                    matB(j, i) = 0.0F;
+                    if (i != j)
+                    {
+                        matB(j, i) = 0.0F;
+                    }
                 }
             }
             return matB;
