@@ -19,7 +19,12 @@ set(APPLICATION_NAME ${EXAMPLE_EXECUTABLE_PREFIX}_ekf_range_sensor)
 add_executable(${APPLICATION_NAME} ${PROJECT_FILES})
 
 set_target_properties(${APPLICATION_NAME} PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(${APPLICATION_NAME} PUBLIC Eigen3::Eigen)
+
+target_link_libraries(${APPLICATION_NAME}
+    PUBLIC
+        Eigen3::Eigen
+        OpenKF
+)
 
 target_include_directories(${APPLICATION_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../>

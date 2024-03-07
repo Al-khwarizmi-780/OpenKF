@@ -16,7 +16,7 @@
 
 namespace kf
 {
-    template<size_t DIM_X, size_t DIM_Z>
+    template<int32_t DIM_X, int32_t DIM_Z>
     class KalmanFilter
     {
     public:

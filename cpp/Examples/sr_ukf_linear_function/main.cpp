@@ -12,7 +12,7 @@
 #include <iostream>
 #include <stdint.h>
 
-#include "kalman_filter/types.h"
+#include "types.h"
 #include "kalman_filter/square_root_ukf.h"
 
 static constexpr size_t DIM_X{ 2 };
