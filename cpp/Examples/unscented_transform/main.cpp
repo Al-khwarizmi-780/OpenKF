@@ -12,9 +12,8 @@
 #include <iostream>
 #include <stdint.h>
 
-#include "kalman_filter/types.h"
+#include "types.h"
 #include "kalman_filter/kalman_filter.h"
-
 #include "kalman_filter/unscented_transform.h"
 
 static constexpr size_t DIM_1{ 1 };

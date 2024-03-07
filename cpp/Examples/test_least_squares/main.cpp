@@ -12,8 +12,8 @@
 #include <iostream>
 #include <stdint.h>
 
-#include "kalman_filter/types.h"
-#include "kalman_filter/util.h"
+#include "types.h"
+#include "util.h"
 
 void runExample1();
 void runExample2();

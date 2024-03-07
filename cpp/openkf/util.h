@@ -76,6 +76,21 @@ namespace kf
             return matB;
         }
 
+        template<size_t ROWS, size_t COLS>
+        Matrix<ROWS, COLS> getUpperTriangulerView(const Matrix<ROWS, COLS>& matA)
+        {
+            Matrix<ROWS, COLS> matB;
+            for (int32_t i = 0; i < ROWS; ++i)
+            {
+                for (int32_t j = i; j < COLS; ++j)
+                {
+                    matB(i, j) = matA(i, j);
+                    matB(j, i) = 0.0F;
+                }
+            }
+            return matB;
+        }
+
         template<size_t ROWS, size_t COLS_L, size_t COLS_W>
         Matrix<ROWS, COLS_L> cholupdate(Matrix<ROWS, COLS_L> matL, Matrix<ROWS, COLS_W> matW, float32_t alpha)
         {

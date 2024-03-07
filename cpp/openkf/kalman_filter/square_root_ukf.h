@@ -23,7 +23,8 @@ namespace kf
     public:
         static constexpr int32_t SIGMA_DIM{ 2 * DIM_X + 1 };
 
-        SquareRootUKF() : KalmanFilter()
+        SquareRootUKF()
+            : KalmanFilter<DIM_X, DIM_Z>()
         {
             // calculate weights
             const float32_t kappa{ static_cast<float32_t>(3 - DIM_X) };
@@ -87,7 +88,7 @@ namespace kf
         void setCovarianceR(const Matrix<DIM_Z, DIM_Z> & matR)
         {
             // cholesky factorization to get matrix R square-root
-            Eigen::LLT<Matrix<DIM_Z, DIM_Z>> lltOfRn(matQ);
+            Eigen::LLT<Matrix<DIM_Z, DIM_Z>> lltOfRn(matR);
             m_matRn = lltOfRn.matrixL(); // sqrt(R)
         }
 
@@ -297,12 +298,17 @@ namespace kf
             // _, S_minus = np.linalg.qr(C)
             Eigen::HouseholderQR< Matrix<DIM_ROW, DIM_COL> > qr(matC);
 
+            Matrix<DIM_ROW, DIM_COL> qrMatrixUpper{ qr.matrixQR() };
+            qrMatrixUpper = util::getUpperTriangulerView<DIM_ROW, DIM_COL>(qrMatrixUpper);
+
             // get the upper triangular matrix from the factorization
             // might need to reimplement QR factorization it as it seems to use dynamic memory allocation
-            Matrix<DIM, DIM> matR{
-                util::getBlock<DIM_ROW, DIM_COL, DIM, DIM>(
-                    qr.matrixQR().triangularView<Eigen::Upper>(), 0, 0)
-            };
+            // Matrix<DIM, DIM> matR{
+            //     util::getBlock<DIM_ROW, DIM_COL, DIM, DIM>(
+            //         qr.matrixQR().triangularView<Eigen::Upper>(), 0, 0)
+            // };
+
+            Matrix<DIM, DIM> matR{ util::getBlock<DIM_ROW, DIM_COL, DIM, DIM>(qrMatrixUpper, 0, 0) };
 
             // Rank - 1 cholesky update
             // x_dev = sigmas_X[:, 0] - x_minus
