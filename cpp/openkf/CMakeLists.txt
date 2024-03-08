@@ -25,9 +25,6 @@ set(LIBRARY_HDR_FILES
     kalman_filter/unscented_transform.h
     kalman_filter/unscented_kalman_filter.h
     kalman_filter/square_root_ukf.h
-    helpers/helpers.h
-    gnss/representation.h
-    gnss/geodetic.h
 )
 
 set(LIBRARY_NAME ${PROJECT_NAME})
