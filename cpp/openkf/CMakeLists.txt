@@ -34,6 +34,13 @@ add_library(${LIBRARY_NAME} ${LIBRARY_SRC_FILES} ${LIBRARY_HDR_FILES})
 set_target_properties(${LIBRARY_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(${LIBRARY_NAME} PUBLIC Eigen3::Eigen)
 
+if (MSVC)
+    # https://stackoverflow.com/a/18635749
+    add_compile_options(-MTd)
+    set_property(TARGET ${LIBRARY_NAME} PROPERTY
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif(MSVC)
+
 target_include_directories(${LIBRARY_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>
