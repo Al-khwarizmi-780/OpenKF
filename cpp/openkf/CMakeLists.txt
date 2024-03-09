@@ -79,3 +79,5 @@ install(
     EXPORT ${TARGETS_EXPORT_NAME} 
     DESTINATION ${CONFIG_INSTALL_DIR}
 )
+
+add_subdirectory(tests)

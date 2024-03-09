@@ -75,7 +75,7 @@ void runExample1()
     R << 0.01F, 0.0F, 0.0F, 0.01F;
 
     kf::Vector<DIM_Z> z;
-    z << 2.5, 0.05;
+    z << 2.5F, 0.05F;
 
     kf::UnscentedKalmanFilter<DIM_X, DIM_Z, DIM_V, DIM_N> ukf;
 

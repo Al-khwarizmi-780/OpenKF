@@ -42,8 +42,8 @@ void executePredictionStep()
     F << 1.0F, T, 0.0F, 1.0F;
 
     kf::Matrix<DIM_X, DIM_X> Q; // process noise covariance
-    Q(0, 0) = (Q11 * T) + (Q22 * (std::pow(T, 3) / 3.0F));
-    Q(0, 1) = Q(1, 0) = Q22 * (std::pow(T, 2) / 2.0F);
+    Q(0, 0) = (Q11 * T) + (Q22 * (std::pow(T, 3.0F) / 3.0F));
+    Q(0, 1) = Q(1, 0) = Q22 * (std::pow(T, 2.0F) / 2.0F);
     Q(1, 1) = Q22 * T;
 
     kalmanfilter.predictLKF(F, Q); // execute prediction step
