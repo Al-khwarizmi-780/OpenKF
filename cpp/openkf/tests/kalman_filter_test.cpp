@@ -13,7 +13,6 @@ public:
     static constexpr int32_t DIM_Z_LKF{ 1 };
     static constexpr int32_t DIM_X_EKF{ 2 };
     static constexpr int32_t DIM_Z_EKF{ 2 };
-    static constexpr kf::float32_t T{ 1.0F };
     static constexpr kf::float32_t Q11{ 0.1F }, Q22{ 0.1F };
 
     kf::KalmanFilter<DIM_X_LKF, DIM_Z_LKF> m_lkf;
@@ -42,16 +41,18 @@ public:
 };
 TEST_F(KalmanFilterTest, test_predictLKF)
 {
+    static constexpr float SAMPLE_TIME_SEC{ 1.0F };
+
     m_lkf.vecX() << 0.0F, 2.0F;
     m_lkf.matP() << 0.1F, 0.0F, 0.0F, 0.1F;
 
     kf::Matrix<DIM_X_LKF, DIM_X_LKF> F; // state transition matrix
-    F << 1.0F, T, 0.0F, 1.0F;
+    F << 1.0F, SAMPLE_TIME_SEC, 0.0F, 1.0F;
 
     kf::Matrix<DIM_X_LKF, DIM_X_LKF> Q; // process noise covariance
-    Q(0, 0) = (Q11 * T) + (Q22 * (std::pow(T, 3.0F) / 3.0F));
-    Q(0, 1) = Q(1, 0) = Q22 * (std::pow(T, 2.0F) / 2.0F);
-    Q(1, 1) = Q22 * T;
+    Q(0, 0) = (Q11 * SAMPLE_TIME_SEC) + (Q22 * (std::pow(SAMPLE_TIME_SEC, 3.0F) / 3.0F));
+    Q(0, 1) = Q(1, 0) = Q22 * (std::pow(SAMPLE_TIME_SEC, 2.0F) / 2.0F);
+    Q(1, 1) = Q22 * SAMPLE_TIME_SEC;
 
     m_lkf.predictLKF(F, Q); // execute prediction step
 
