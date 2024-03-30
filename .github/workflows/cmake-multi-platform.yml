@@ -30,12 +30,18 @@ jobs:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
+            gen: MinGW Makefiles
+
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
+            gen: Ninja
+
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
+            gen: Ninja
+
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -52,7 +58,10 @@ jobs:
       with:
         version: 3.4.0
       env:
-        CMAKE_GENERATOR: ${{ matrix.os }}
+        CMAKE_GENERATOR: ${{ matrix.gen }}
+      
+    - name: Check Eigen cmake module
+      run: cmake --find-package -DNAME=Eigen3 -DCOMPILER_ID=GNU -DLANGUAGE=C -DMODE=EXIST
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.

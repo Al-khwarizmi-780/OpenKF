@@ -1,6 +1,6 @@
 if (BUILD_TESTING)
     cmake_minimum_required(VERSION 3.4)
-    project(unit_tests)
+    project(OpenKFTest)
   
     enable_testing()
     #find_package(GTest REQUIRED)
