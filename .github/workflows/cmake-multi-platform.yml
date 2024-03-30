@@ -37,10 +37,10 @@ jobs:
             cpp_compiler: g++
             gen: Unix Makefiles
 
-          # - os: ubuntu-latest
-          #   c_compiler: clang
-          #   cpp_compiler: clang++
-          #   gen: Ninja
+          - os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+            gen: Ninja
 
         exclude:
           - os: windows-latest
