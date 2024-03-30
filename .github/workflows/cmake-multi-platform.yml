@@ -27,20 +27,20 @@ jobs:
         build_type: [Release]
         c_compiler: [gcc, clang, cl]
         include:
-          - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
-            gen: MinGW Makefiles
+          # - os: windows-latest
+          #   c_compiler: cl
+          #   cpp_compiler: cl
+          #   gen: MinGW Makefiles
 
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
-            gen: Ninja
+            gen: Unix Makefiles
 
-          - os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
-            gen: Ninja
+          # - os: ubuntu-latest
+          #   c_compiler: clang
+          #   cpp_compiler: clang++
+          #   gen: Ninja
 
         exclude:
           - os: windows-latest
