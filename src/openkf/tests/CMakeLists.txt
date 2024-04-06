@@ -1,4 +1,4 @@
-# if (BUILD_TESTING)
+if (BUILD_TESTING)
     # cmake_minimum_required(VERSION 3.4)
     set(TEST_APP_NAME ${PROJECT_NAME}_Test)
   
@@ -16,6 +16,7 @@
 
     target_link_libraries(${TEST_APP_NAME} PRIVATE
         GTest::gtest_main
+        GTest::gmock
         OpenKF
     )
 
@@ -32,4 +33,4 @@
     include(GoogleTest)
     gtest_discover_tests(${TEST_APP_NAME})
     
-# endif(BUILD_TESTING)
+endif(BUILD_TESTING)
