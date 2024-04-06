@@ -28,6 +28,9 @@ set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
 
 enable_language(C CXX)
 
+set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
+
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 include(CTest)
