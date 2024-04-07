@@ -3,7 +3,7 @@ if (BUILD_TESTING)
     set(TEST_APP_NAME ${PROJECT_NAME}_Test)
   
     enable_testing()
-    
+
     # find_package(GTest REQUIRED)
     # include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
         
@@ -20,6 +20,8 @@ if (BUILD_TESTING)
         GTest::gmock
         OpenKF
     )
+
+    target_compile_definitions(${TEST_APP_NAME} PRIVATE BUILD_GMOCK=OFF)
 
     target_include_directories( ${TEST_APP_NAME} PRIVATE ${GTEST_INCLUDE_DIRS} )
     # target_link_libraries( ${TEST_APP_NAME} tested_library ${GTEST_BOTH_LIBRARIES} )
