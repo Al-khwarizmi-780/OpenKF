@@ -33,8 +33,9 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
-include(CTest)
-
 add_subdirectory(src/third_party/googletest)
 add_subdirectory(src/openkf)
 add_subdirectory(src/examples)
+
+include(CTest)
+add_subdirectory(tests)
