@@ -3,8 +3,8 @@ if (BUILD_TESTING)
     set(TEST_APP_NAME ${PROJECT_NAME}_Test)
   
     enable_testing()
-    #find_package(GTest REQUIRED)
-    #include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+    find_package(GTest REQUIRED)
+    include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
         
     add_executable(${TEST_APP_NAME} 
         unit_tests.cpp
