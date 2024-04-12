@@ -40,12 +40,12 @@ namespace kf
         ///
         void setCovarianceQ(const Matrix<DIM_V, DIM_V> & matQ)
         {
-            const size_t S_IDX{ DIM_X };
-            const size_t L_IDX{ S_IDX + DIM_V };
+            const int32_t S_IDX{ DIM_X };
+            const int32_t L_IDX{ S_IDX + DIM_V };
 
-            for (size_t i{ S_IDX }; i < L_IDX; ++i)
+            for (int32_t i{ S_IDX }; i < L_IDX; ++i)
             {
-                for (size_t j{ S_IDX }; j < L_IDX; ++j)
+                for (int32_t j{ S_IDX }; j < L_IDX; ++j)
                 {
                     m_matPa(i, j) = matQ(i - S_IDX, j - S_IDX);
                 }
@@ -58,12 +58,12 @@ namespace kf
         ///
         void setCovarianceR(const Matrix<DIM_N, DIM_N> & matR)
         {
-            const size_t S_IDX{ DIM_X + DIM_V };
-            const size_t L_IDX{ S_IDX + DIM_N };
+            const int32_t S_IDX{ DIM_X + DIM_V };
+            const int32_t L_IDX{ S_IDX + DIM_N };
 
-            for (size_t i{ S_IDX }; i < L_IDX; ++i)
+            for (int32_t i{ S_IDX }; i < L_IDX; ++i)
             {
-                for (size_t j{ S_IDX }; j < L_IDX; ++j)
+                for (int32_t j{ S_IDX }; j < L_IDX; ++j)
                 {
                     m_matPa(i, j) = matR(i - S_IDX, j - S_IDX);
                 }
@@ -105,7 +105,7 @@ namespace kf
             // y_sigmas = np.zeros((self.dim_x, self.n_sigma))
             // for i in range(self.n_sigma):
             //     y_sigmas[:, i] = f(xx_sigmas[:, i], xv_sigmas[:, i])
-            for (size_t i{ 0 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 0 }; i < SIGMA_DIM; ++i)
             {
                 const Vector<DIM_X> sigmaXxi{ util::getColumnAt<DIM_X, SIGMA_DIM>(i, sigmaXx) };
                 const Vector<DIM_V> sigmaXvi{ util::getColumnAt<DIM_V, SIGMA_DIM>(i, sigmaXv) };
@@ -150,7 +150,7 @@ namespace kf
             // for i in range(self.n_sigma) :
             //     y_sigmas[:, i] = h(xx_sigmas[:, i], xn_sigmas[:, i])
             Matrix<DIM_Z, SIGMA_DIM> sigmaY;
-            for (size_t i{ 0 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 0 }; i < SIGMA_DIM; ++i)
             {
                 const Vector<DIM_X> sigmaXxi{ util::getColumnAt<DIM_X, SIGMA_DIM>(i, sigmaXx) };
                 const Vector<DIM_N> sigmaXni{ util::getColumnAt<DIM_N, SIGMA_DIM>(i, sigmaXn) };
@@ -194,7 +194,7 @@ namespace kf
         ///
         void updateAugmentedVecX()
         {
-            for (size_t i{ 0 }; i < DIM_X; ++i)
+            for (int32_t i{ 0 }; i < DIM_X; ++i)
             {
                 m_vecXa[i] = m_vecX[i];
             }
@@ -205,9 +205,9 @@ namespace kf
         ///
         void updateAugmentedMatP()
         {
-            for (size_t i{ 0 }; i < DIM_X; ++i)
+            for (int32_t i{ 0 }; i < DIM_X; ++i)
             {
-                for (size_t j{ 0 }; j < DIM_X; ++j)
+                for (int32_t j{ 0 }; j < DIM_X; ++j)
                 {
                     m_matPa(i, j) = m_matP(i, j);
                 }
@@ -251,10 +251,10 @@ namespace kf
             // X_0 = \bar{xa}
             util::copyToColumn< DIM_A, SIGMA_DIM >(0, sigmaXa, vecXa);
 
-            for (size_t i{ 0 }; i < DIM_A; ++i)
+            for (int32_t i{ 0 }; i < DIM_A; ++i)
             {
-                const size_t IDX_1{ i + 1 };
-                const size_t IDX_2{ i + DIM_A + 1 };
+                const int32_t IDX_1{ i + 1 };
+                const int32_t IDX_2{ i + DIM_A + 1 };
 
                 util::copyToColumn< DIM_A, SIGMA_DIM >(IDX_1, sigmaXa, vecXa);
                 util::copyToColumn< DIM_A, SIGMA_DIM >(IDX_2, sigmaXa, vecXa);
@@ -279,7 +279,7 @@ namespace kf
         {
             // 1. calculate mean: \bar{y} = \sum_{i_0}^{2n} W[0, i] Y[:, i]
             vecX = m_weight0 * util::getColumnAt<STATE_DIM, SIGMA_DIM>(0, sigmaX);
-            for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
                 vecX += m_weighti * util::getColumnAt<STATE_DIM, SIGMA_DIM>(i, sigmaX); // y += W[0, i] Y[:, i]
             }
@@ -288,7 +288,7 @@ namespace kf
             Vector<STATE_DIM> devXi{ util::getColumnAt<STATE_DIM, SIGMA_DIM>(0, sigmaX) - vecX }; // Y[:, 0] - \bar{ y }
             matPxx = m_weight0 * devXi * devXi.transpose(); // P_0 = W[0, 0] (Y[:, 0] - \bar{y}) (Y[:, 0] - \bar{y})^T
 
-            for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
                 devXi = util::getColumnAt<STATE_DIM, SIGMA_DIM>(i, sigmaX) - vecX; // Y[:, i] - \bar{y}
 
@@ -318,7 +318,7 @@ namespace kf
                 m_weight0 * (devXi * devYi.transpose())
             }; 
 
-            for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
                 devXi = util::getColumnAt<DIM_X, SIGMA_DIM>(i, sigmaX) - vecX; // X[:, i] - \bar{x}
                 devYi = util::getColumnAt<DIM_Z, SIGMA_DIM>(i, sigmaY) - vecY; // Y[:, i] - \bar{y}

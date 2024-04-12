@@ -25,7 +25,7 @@ static kf::KalmanFilter<DIM_X, DIM_Z> kalmanfilter;
 void executePredictionStep();
 void executeCorrectionStep();
 
-int main(int argc, char ** argv)
+int main()
 {
     executePredictionStep();
     executeCorrectionStep();

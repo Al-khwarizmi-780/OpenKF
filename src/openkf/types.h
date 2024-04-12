@@ -19,10 +19,10 @@ namespace kf
 {
 	using float32_t = float;
 
-	template<size_t ROW, size_t COL>
+	template<int32_t ROW, int32_t COL>
 	using Matrix = Eigen::Matrix<float32_t, ROW, COL>;
 
-	template<size_t ROW>
+	template<int32_t ROW>
 	using Vector = Eigen::Matrix<float32_t, ROW, 1>;
 }
 

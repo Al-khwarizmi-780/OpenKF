@@ -44,7 +44,7 @@ kf::Vector<DIM_Z> funcH(const kf::Vector<DIM_X> & x, const kf::Vector<DIM_N> & n
     return y;
 }
 
-int main(int argc, char ** argv)
+int main()
 {
     // example 1
     runExample1();

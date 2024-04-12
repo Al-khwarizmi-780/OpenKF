@@ -18,41 +18,41 @@ namespace kf
 {
     namespace util
     {
-        template<size_t ROWS, size_t COLS>
-        void copyToColumn(const size_t colIdx, Matrix<ROWS, COLS>& lhsSigmaX, const Vector<ROWS>& rhsVecX)
+        template<int32_t ROWS, int32_t COLS>
+        void copyToColumn(const int32_t colIdx, Matrix<ROWS, COLS>& lhsSigmaX, const Vector<ROWS>& rhsVecX)
         {
-            for (size_t i{ 0 }; i < ROWS; ++i)
+            for (int32_t i{ 0 }; i < ROWS; ++i)
             { // rows
                 lhsSigmaX(i, colIdx) = rhsVecX[i];
             }
         }
 
-        template<size_t ROWS, size_t COLS>
-        void addColumnFrom(const size_t colIdx, Matrix<ROWS, COLS>& lhsSigmaX, const Vector<ROWS>& rhsVecX)
+        template<int32_t ROWS, int32_t COLS>
+        void addColumnFrom(const int32_t colIdx, Matrix<ROWS, COLS>& lhsSigmaX, const Vector<ROWS>& rhsVecX)
         {
-            for (size_t i{ 0 }; i < ROWS; ++i)
+            for (int32_t i{ 0 }; i < ROWS; ++i)
             { // rows
                 lhsSigmaX(i, colIdx) += rhsVecX[i];
             }
         }
 
-        template<size_t ROWS, size_t COLS>
-        void subColumnFrom(const size_t colIdx, Matrix<ROWS, COLS>& lhsSigmaX, const Vector<ROWS>& rhsVecX)
+        template<int32_t ROWS, int32_t COLS>
+        void subColumnFrom(const int32_t colIdx, Matrix<ROWS, COLS>& lhsSigmaX, const Vector<ROWS>& rhsVecX)
         {
-            for (size_t i{ 0 }; i < ROWS; ++i)
+            for (int32_t i{ 0 }; i < ROWS; ++i)
             { // rows
                 lhsSigmaX(i, colIdx) -= rhsVecX[i];
             }
         }
 
-        template<size_t ROWS, size_t COLS>
-        Vector<ROWS> getColumnAt(const size_t colIdx, const Matrix<ROWS, COLS>& matX)
+        template<int32_t ROWS, int32_t COLS>
+        Vector<ROWS> getColumnAt(const int32_t colIdx, const Matrix<ROWS, COLS>& matX)
         {
             assert(colIdx < COLS); // assert if colIdx is out of boundary
 
             Vector<ROWS> vecXi;
 
-            for (size_t i{ 0 }; i < ROWS; ++i)
+            for (int32_t i{ 0 }; i < ROWS; ++i)
             { // rows
                 vecXi[i] = matX(i, colIdx);
             }
@@ -60,7 +60,7 @@ namespace kf
             return vecXi;
         }
 
-        template<size_t ROWS, size_t COLS, size_t N_ROWS, size_t N_COLS>
+        template<int32_t ROWS, int32_t COLS, int32_t N_ROWS, int32_t N_COLS>
         Matrix<N_ROWS, N_COLS> getBlock(const Matrix<ROWS, COLS>& matA, int32_t startRowIdx, int32_t startColIdx)
         {
             Matrix<N_ROWS, N_COLS> matB;
@@ -76,7 +76,7 @@ namespace kf
             return matB;
         }
 
-        template<size_t ROWS, size_t COLS>
+        template<int32_t ROWS, int32_t COLS>
         Matrix<ROWS, COLS> getUpperTriangulerView(const Matrix<ROWS, COLS>& matA)
         {
             Matrix<ROWS, COLS> matB;
@@ -94,7 +94,7 @@ namespace kf
             return matB;
         }
 
-        template<size_t ROWS, size_t COLS_L, size_t COLS_W>
+        template<int32_t ROWS, int32_t COLS_L, int32_t COLS_W>
         Matrix<ROWS, COLS_L> cholupdate(Matrix<ROWS, COLS_L> matL, Matrix<ROWS, COLS_W> matW, float32_t alpha)
         {
             Matrix<ROWS, COLS_L> matLo;
@@ -127,7 +127,7 @@ namespace kf
             return matLo;
         }
 
-        template<size_t ROWS, size_t COLS>
+        template<int32_t ROWS, int32_t COLS>
         Matrix<ROWS, COLS> forwardSubstitute(const Matrix<ROWS, ROWS>& matA, const Matrix<ROWS, COLS>& matB)
         {
             Matrix<ROWS, COLS> matX;
@@ -148,7 +148,7 @@ namespace kf
             return matX;
         }
 
-        template<size_t ROWS, size_t COLS>
+        template<int32_t ROWS, int32_t COLS>
         Matrix<ROWS, COLS> backwardSubstitute(const Matrix<ROWS, ROWS>& matA, const Matrix<ROWS, COLS>& matB)
         {
             Matrix<ROWS, COLS> matX;
@@ -170,7 +170,7 @@ namespace kf
             return matX;
         }
 
-        template<size_t ROWS1, size_t ROWS2, size_t COLS>
+        template<int32_t ROWS1, int32_t ROWS2, int32_t COLS>
         class JointRows
         {
         public:
@@ -199,7 +199,7 @@ namespace kf
             Matrix<ROWS1 + ROWS2, COLS> m_matJ;
         };
 
-        template<size_t ROWS, size_t COLS1, size_t COLS2>
+        template<int32_t ROWS, int32_t COLS1, int32_t COLS2>
         class JointCols
         {
         public:
