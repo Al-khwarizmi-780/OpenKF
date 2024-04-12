@@ -20,7 +20,7 @@ void runExample2();
 void runExample3();
 void runExample4();
 
-int main(int argc, char ** argv)
+int main()
 {
     runExample1();
     runExample2();

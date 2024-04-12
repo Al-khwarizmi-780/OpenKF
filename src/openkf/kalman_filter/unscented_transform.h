@@ -18,11 +18,11 @@
 
 namespace kf
 {
-    template<size_t DIM>
+    template<int32_t DIM>
     class UnscentedTransform
     {
     public:
-        static constexpr size_t SIGMA_DIM{ (2 * DIM) + 1 };
+        static constexpr int32_t SIGMA_DIM{ (2 * DIM) + 1 };
 
         UnscentedTransform() {}
         ~UnscentedTransform() {}
@@ -45,12 +45,12 @@ namespace kf
             updateSigmaPoints(vecX, matPxx, kappa);
         }
 
-        template<size_t DIM_X>
+        template<int32_t DIM_X>
         void calculateWeightedMeanAndCovariance(const Matrix<DIM_X, SIGMA_DIM> & sigmaX, Vector<DIM_X> & vecX, Matrix<DIM_X, DIM_X> & matPxx)
         {
             // 1. calculate mean: \bar{y} = \sum_{i_0}^{2n} W[0, i] Y[:, i]
             vecX = _weights[0] * util::getColumnAt<DIM_X, SIGMA_DIM>(0, sigmaX);
-            for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
                 vecX += _weights[1] * util::getColumnAt<DIM_X, SIGMA_DIM>(i, sigmaX); // y += W[0, i] Y[:, i]
             }
@@ -59,7 +59,7 @@ namespace kf
             Vector<DIM_X> devXi{ util::getColumnAt<DIM_X, SIGMA_DIM>(0, sigmaX) - vecX }; // Y[:, 0] - \bar{ y }
             matPxx = _weights[0] * devXi * devXi.transpose(); // P_0 = W[0, 0] (Y[:, 0] - \bar{y}) (Y[:, 0] - \bar{y})^T
 
-            for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
                 devXi = util::getColumnAt<DIM_X, SIGMA_DIM>(i, sigmaX) - vecX; // Y[:, i] - \bar{y}
 
@@ -145,10 +145,10 @@ namespace kf
             // X_0 = \bar{x}
             util::copyToColumn< DIM, SIGMA_DIM >(0, _sigmaX, vecX);
 
-            for (size_t i{ 0 }; i < DIM; ++i)
+            for (int32_t i{ 0 }; i < DIM; ++i)
             {
-                const size_t IDX_1{ i + 1 };
-                const size_t IDX_2{ i + DIM + 1 };
+                const int32_t IDX_1{ i + 1 };
+                const int32_t IDX_2{ i + DIM + 1 };
 
                 util::copyToColumn< DIM, SIGMA_DIM >(IDX_1, _sigmaX, vecX);
                 util::copyToColumn< DIM, SIGMA_DIM >(IDX_2, _sigmaX, vecX);
@@ -168,7 +168,7 @@ namespace kf
         template<typename NonLinearFunctionCallback>
         void transformSigmaPoints(NonLinearFunctionCallback nonlinearFunction, Matrix<DIM, SIGMA_DIM> & sigmaY)
         {
-            for (size_t i{ 0 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 0 }; i < SIGMA_DIM; ++i)
             {
                 const Vector<DIM> x{ util::getColumnAt<DIM, SIGMA_DIM>(i, _sigmaX) };
                 const Vector<DIM> y{ nonlinearFunction(x) }; // y = f(x)
@@ -187,7 +187,7 @@ namespace kf
         {
             // 1. calculate mean: \bar{y} = \sum_{i_0}^{2n} W[0, i] Y[:, i]
             vecY = _weights[0] * util::getColumnAt<DIM, SIGMA_DIM>(0, sigmaY);
-            for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
                 vecY += _weights[1] * util::getColumnAt<DIM, SIGMA_DIM>(i, sigmaY); // y += W[0, i] Y[:, i]
             }
@@ -196,7 +196,7 @@ namespace kf
             Vector<DIM> devYi{ util::getColumnAt<DIM, SIGMA_DIM>(0, sigmaY) - vecY }; // Y[:, 0] - \bar{ y }
             matPyy = _weights[0] * devYi * devYi.transpose(); // P_0 = W[0, 0] (Y[:, 0] - \bar{y}) (Y[:, 0] - \bar{y})^T
 
-            for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
                 devYi = util::getColumnAt<DIM, SIGMA_DIM>(i, sigmaY) - vecY; // Y[:, i] - \bar{y}
 

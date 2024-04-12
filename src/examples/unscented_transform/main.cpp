@@ -37,7 +37,7 @@ kf::Vector<DIM_2> function2(const kf::Vector<DIM_2> & x)
     return y;
 }
 
-int main(int argc, char ** argv)
+int main()
 {
     // example 1
     runExample1();

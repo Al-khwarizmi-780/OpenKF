@@ -25,7 +25,7 @@ kf::Vector<DIM_Z> covertCartesian2Polar(const kf::Vector<DIM_X> & cartesian);
 kf::Matrix<DIM_Z, DIM_Z> calculateJacobianMatrix(const kf::Vector<DIM_X> & vecX);
 void executeCorrectionStep();
 
-int main(int argc, char ** argv)
+int main()
 {
     executeCorrectionStep();
 
