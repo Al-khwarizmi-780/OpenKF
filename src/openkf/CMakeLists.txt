@@ -36,7 +36,6 @@ target_link_libraries(${LIBRARY_NAME} PUBLIC Eigen3::Eigen)
 
 if (MSVC)
     # https://stackoverflow.com/a/18635749
-    add_compile_options(-MTd)
     set_property(TARGET ${LIBRARY_NAME} PROPERTY
             MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif(MSVC)

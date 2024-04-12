@@ -29,14 +29,21 @@ set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
 
 enable_language(C CXX)
 
-set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
+if (NOT MSVC)
+    set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
+endif(NOT MSVC)
+
+if (MSVC)
+    # https://stackoverflow.com/a/18635749
+    add_compile_options(-MTd)
+endif (MSVC)
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+
+include(CTest)
 
 add_subdirectory(src/third_party/googletest)
 add_subdirectory(src/openkf)
 add_subdirectory(src/examples)
-
-include(CTest)
 add_subdirectory(tests)
