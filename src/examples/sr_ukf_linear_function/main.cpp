@@ -25,7 +25,7 @@ kf::Vector<DIM_X> funcF(const kf::Vector<DIM_X> & x)
     return x;
 }
 
-int main(int argc, char ** argv)
+int main()
 {
     // example 1
     runExample1();

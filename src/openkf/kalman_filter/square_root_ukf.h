@@ -107,7 +107,7 @@ namespace kf
             // y_sigmas = np.zeros((self.dim_x, self.n_sigma))
             // for i in range(self.n_sigma):
             //     y_sigmas[:, i] = f(x_sigmas[:, i])
-            for (size_t i{ 0 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 0 }; i < SIGMA_DIM; ++i)
             {
                 const Vector<DIM_X> Xi{ util::getColumnAt<DIM_X, SIGMA_DIM>(i, matSigmaX) };
                 const Vector<DIM_X> Yi{ predictionModelFunc(Xi) }; // y = f(x)
@@ -140,7 +140,7 @@ namespace kf
             //     y_sigmas[:, i] = f(x_sigmas[:, i])
             Matrix<DIM_Z, SIGMA_DIM> matSigmaY;
 
-            for (size_t i{ 0 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 0 }; i < SIGMA_DIM; ++i)
             {
                 const Vector<DIM_X> Xi{ util::getColumnAt<DIM_X, SIGMA_DIM>(i, matSigmaX) };
                 const Vector<DIM_Z> Yi{ measurementModelFunc(Xi) }; // y = f(x)
@@ -217,10 +217,10 @@ namespace kf
             // X_0 = \bar{xa}
             util::copyToColumn< DIM_X, SIGMA_DIM >(0, sigmaX, vecXk);
 
-            for (size_t i{ 0 }; i < DIM_X; ++i)
+            for (int32_t i{ 0 }; i < DIM_X; ++i)
             {
-                const size_t IDX_1{ i + 1 };
-                const size_t IDX_2{ i + DIM_X + 1 };
+                const int32_t IDX_1{ i + 1 };
+                const int32_t IDX_2{ i + DIM_X + 1 };
 
                 util::copyToColumn< DIM_X, SIGMA_DIM >(IDX_1, sigmaX, vecXk);
                 util::copyToColumn< DIM_X, SIGMA_DIM >(IDX_2, sigmaX, vecXk);
@@ -239,12 +239,12 @@ namespace kf
         /// @param sigmaX matrix of sigma points where each column contain single sigma point
         /// @param vecX output weighted mean
         ///
-        template<size_t DIM>
+        template<int32_t DIM>
         void calculateWeightedMean(const Matrix<DIM, SIGMA_DIM> & sigmaX, Vector<DIM> & vecX)
         {
             // 1. calculate mean: \bar{y} = \sum_{i_0}^{2n} W[0, i] Y[:, i]
             vecX = m_weight0 * util::getColumnAt<DIM, SIGMA_DIM>(0, sigmaX);
-            for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
                 vecX += m_weighti * util::getColumnAt<DIM, SIGMA_DIM>(i, sigmaX); // y += W[0, i] Y[:, i]
             }
@@ -270,7 +270,7 @@ namespace kf
                 m_weight0 * (devXi * devYi.transpose())
             }; 
 
-            for (size_t i{ 1 }; i < SIGMA_DIM; ++i)
+            for (int32_t i{ 1 }; i < SIGMA_DIM; ++i)
             {
                 devXi = util::getColumnAt<DIM_X, SIGMA_DIM>(i, sigmaX) - vecX; // X[:, i] - \bar{x}
                 devYi = util::getColumnAt<DIM_Z, SIGMA_DIM>(i, sigmaY) - vecY; // Y[:, i] - \bar{y}
