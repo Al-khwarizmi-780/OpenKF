@@ -13,6 +13,7 @@
 #define KALMAN_FILTER_LIB_H
 
 #include "types.h"
+#include "motion_model/motion_model.h"
 
 namespace kf
 {
@@ -75,6 +76,32 @@ namespace kf
         {
             m_vecX = predictionModelFunc(m_vecX);
             m_matP = matJacobF * m_matP * matJacobF.transpose() + matQ;
+        }
+
+        ///
+        /// @brief predict state with a linear process model.
+        /// @param motionModel prediction motion model function
+        ///
+        void predictEkf(MotionModel<DIM_X> const & motionModel)
+        {
+            Matrix<DIM_X, DIM_X> const matFk{ motionModel.getJacobianFk(m_vecX) };
+            Matrix<DIM_X, DIM_X> const matQk{ motionModel.getProcessNoiseCov(m_vecX) };
+            m_vecX = motionModel.f(m_vecX);
+            m_matP = matFk * m_matP * matFk.transpose() + matQk;
+        }
+
+        ///
+        /// @brief predict state with a linear process model with external input.
+        /// @param motionModel prediction motion model function
+        /// @param vecU input vector
+        ///
+        template<int32_t DIM_U>
+        void predictEkf(MotionModelExtInput<DIM_X, DIM_U> const & motionModel, Vector<DIM_U> const & vecU)
+        {
+            Matrix<DIM_X, DIM_X> const matFk{ motionModel.getJacobianFk(m_vecX, vecU) };
+            Matrix<DIM_X, DIM_X> const matQk{ motionModel.getProcessNoiseCov(m_vecX, vecU) };
+            m_vecX = motionModel.f(m_vecX, vecU);
+            m_matP = matFk * m_matP * matFk.transpose() + matQk;
         }
 
         ///
