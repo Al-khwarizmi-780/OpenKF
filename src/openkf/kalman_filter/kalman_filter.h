@@ -82,7 +82,7 @@ namespace kf
         /// @brief predict state with a linear process model.
         /// @param motionModel prediction motion model function
         ///
-        void predictEkf(MotionModel<DIM_X> const & motionModel)
+        void predictEkf(motionmodel::MotionModel<DIM_X> const & motionModel)
         {
             Matrix<DIM_X, DIM_X> const matFk{ motionModel.getJacobianFk(m_vecX) };
             Matrix<DIM_X, DIM_X> const matQk{ motionModel.getProcessNoiseCov(m_vecX) };
@@ -96,7 +96,7 @@ namespace kf
         /// @param vecU input vector
         ///
         template<int32_t DIM_U>
-        void predictEkf(MotionModelExtInput<DIM_X, DIM_U> const & motionModel, Vector<DIM_U> const & vecU)
+        void predictEkf(motionmodel::MotionModelExtInput<DIM_X, DIM_U> const & motionModel, Vector<DIM_U> const & vecU)
         {
             Matrix<DIM_X, DIM_X> const matFk{ motionModel.getJacobianFk(m_vecX, vecU) };
             Matrix<DIM_X, DIM_X> const matQk{ motionModel.getProcessNoiseCov(m_vecX, vecU) };
