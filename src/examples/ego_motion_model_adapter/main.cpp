@@ -14,9 +14,11 @@
 
 #include "types.h"
 #include "motion_model/ego_motion_model.h"
+#include "kalman_filter/kalman_filter.h"
 
-static constexpr size_t DIM_X{ 5 };
-static constexpr size_t DIM_U{ 3 };
+static constexpr size_t DIM_X{ 5 }; /// \vec{x} = [x, y, vx, vy, yaw]^T
+static constexpr size_t DIM_U{ 3 }; /// \vec{u} = [steeringAngle, ds, dyaw]^T
+static constexpr size_t DIM_Z{ 2 };
 
 using namespace kf;
 
@@ -28,10 +30,10 @@ class EgoMotionModelAdapter : public motionmodel::MotionModelExtInput<DIM_X, DIM
 public:
     virtual Vector<DIM_X> f(Vector<DIM_X> const & vecX, Vector<DIM_U> const & vecU, Vector<DIM_X> const & /*vecQ = Vector<DIM_X>::Zero()*/) const override
     {
-        Vector<3> tmpVecX;
+        Vector<3> tmpVecX; // \vec{x} = [x, y, yaw]^T
         tmpVecX << vecX[0], vecX[1], vecX[4];
 
-        Vector<2> tmpVecU;
+        Vector<2> tmpVecU; // \vec{u} = [ds, dyaw]^T
         tmpVecU << vecU[1], vecU[2];
 
         motionmodel::EgoMotionModel const egoMotionModel;
@@ -47,15 +49,28 @@ public:
 
     virtual Matrix<DIM_X, DIM_X> getProcessNoiseCov(Vector<DIM_X> const & vecX, Vector<DIM_U> const & vecU) const override
     {
+        // input idx -> output index mapping
+        // 0 -> 0
+        // 1 -> 1
+        // 2 -> 4
         Vector<3> tmpVecX;
         tmpVecX << vecX[0], vecX[1], vecX[4];
 
+        // input idx -> output index mapping
+        // 0 -> 1
+        // 1 -> 2
         Vector<2> tmpVecU;
         tmpVecU << vecU[1], vecU[2];
 
         motionmodel::EgoMotionModel const egoMotionModel;
 
         Matrix<3, 3> matQ = egoMotionModel.getProcessNoiseCov(tmpVecX, tmpVecU);
+
+        //        |q00    q01   x   x   q02|
+        //        |q10    q11   x   x   q12|         |q00   q01   q02|
+        // Qout = |  x      x   x   x     x| <- Q =  |q10   q11   q12|
+        //        |  x      x   x   x     x|         |q20   q21   q22|
+        //        |q20    q21   x   x   q22|
 
         Matrix<DIM_X, DIM_X> matQout;
         matQout(0, 0) = matQ(0, 0);
@@ -150,6 +165,12 @@ public:
 int main()
 {
     EgoMotionModelAdapter egoMotionModelAdapter;
+
+    Vector<DIM_U> vecU;
+    vecU << 1.0F, 2.0F, 0.01F;
+
+    KalmanFilter<DIM_X, DIM_Z> kf;
+    kf.predictEkf(egoMotionModelAdapter, vecU);
 
     return 0;
 }
