@@ -13,10 +13,10 @@
 #define UNSCENTED_TRANSFORM_H
 
 #include "Eigen/Dense"
+#include "Eigen/src/Cholesky/LLT.h"
 #include "types.h"
 #include "util.h"
 #include <iostream>
-#include "Eigen/src/Cholesky/LLT.h"
 
 namespace kf
 {
