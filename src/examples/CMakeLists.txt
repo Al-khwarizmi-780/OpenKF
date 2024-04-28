@@ -6,3 +6,5 @@ add_subdirectory(unscented_transform)
 add_subdirectory(ukf_range_sensor)
 add_subdirectory(test_least_squares)
 add_subdirectory(sr_ukf_linear_function)
+add_subdirectory(ego_motion_model_adapter)
+
