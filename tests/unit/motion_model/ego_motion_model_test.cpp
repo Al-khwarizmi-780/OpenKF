@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "motion_model/ego_motion_model.h"
+#include "kalman_filter/kalman_filter.h"
 #include "types.h"
 
 using namespace kf;
@@ -12,6 +13,7 @@ public:
 
     static constexpr int32_t DIM_X{ 3 };
     static constexpr int32_t DIM_U{ 2 };
+    static constexpr int32_t DIM_Z{ 1 };
 };
 
 TEST_F(EgoMotionModelTest, test_egoMotionModel_Covariances)
@@ -162,4 +164,100 @@ TEST_F(EgoMotionModelTest, test_egoMotionModel_ForwardReverseMoves)
     EXPECT_NEAR(vecXn[0], vecX[0] + vecU[0] * std::cos(vecX[2] + (vecU[1] / 2.0F)), 0.0001F);
     EXPECT_NEAR(vecXn[1], vecX[1] + vecU[0] * std::sin(vecX[2] + (vecU[1] / 2.0F)), 0.0001F);
     EXPECT_NEAR(vecXn[2], vecX[2] + vecU[1], 0.0001F);
+}
+
+TEST_F(EgoMotionModelTest, test_egoMotionModel_EKF_ForwardReverseMoves)
+{
+    kf::KalmanFilter<DIM_X, DIM_Z> kalmanFilter;
+    kf::motionmodel::EgoMotionModel egoMotionModel;
+    kf::Vector<DIM_X> vecX;
+    kf::Vector<DIM_U> vecU;
+
+    // moving forward
+    vecX << 0.0F, 0.0F, 0.0F;
+    vecU << 0.5F, 0.0F;
+
+    kalmanFilter.vecX() = vecX;
+    kalmanFilter.predictEkf(egoMotionModel, vecU);
+
+    EXPECT_NEAR(kalmanFilter.vecX()[0], vecX[0]+0.5F, 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[1], vecX[1], 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2], 0.0001F);
+
+    // moving backward/reverse
+    vecX << 0.0F, 0.0F, 0.0F;
+    vecU << -0.5F, 0.0F;
+
+    kalmanFilter.vecX() = vecX;
+    kalmanFilter.predictEkf(egoMotionModel, vecU);
+
+    EXPECT_NEAR(kalmanFilter.vecX()[0], vecX[0]-0.5F, 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[1], vecX[1], 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2], 0.0001F);
+
+    // moving forward + oriented 90 degrees
+    vecX << 0.0F, 0.0F, M_PI / 2.0F;
+    vecU << 0.5F, 0.0F;
+
+    kalmanFilter.vecX() = vecX;
+    kalmanFilter.predictEkf(egoMotionModel, vecU);
+
+    EXPECT_NEAR(kalmanFilter.vecX()[0], vecX[0], 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[1], vecX[1] + 0.5F, 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2], 0.0001F);
+
+    // moving backward + oriented 90 degrees
+    vecX << 0.0F, 0.0F, M_PI / 2.0F;
+    vecU << -0.5F, 0.0F;
+
+    kalmanFilter.vecX() = vecX;
+    kalmanFilter.predictEkf(egoMotionModel, vecU);
+
+    EXPECT_NEAR(kalmanFilter.vecX()[0], vecX[0], 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[1], vecX[1] - 0.5F, 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2], 0.0001F);
+
+    // moving forward + oriented -90 degrees
+    vecX << 0.0F, 0.0F, -M_PI / 2.0F;
+    vecU << 0.5F, 0.0F;
+
+    kalmanFilter.vecX() = vecX;
+    kalmanFilter.predictEkf(egoMotionModel, vecU);
+
+    EXPECT_NEAR(kalmanFilter.vecX()[0], vecX[0], 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[1], vecX[1] - 0.5F, 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2], 0.0001F);
+
+    // moving backward + oriented -90 degrees
+    vecX << 0.0F, 0.0F, -M_PI / 2.0F;
+    vecU << -0.5F, 0.0F;
+
+    kalmanFilter.vecX() = vecX;
+    kalmanFilter.predictEkf(egoMotionModel, vecU);
+
+    EXPECT_NEAR(kalmanFilter.vecX()[0], vecX[0], 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[1], vecX[1] + 0.5F, 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2], 0.0001F);
+
+    // moving forward + oriented 45 degrees
+    vecX << 0.0F, 0.0F, M_PI / 4.0F;
+    vecU << 0.5F, 0.0F;
+
+    kalmanFilter.vecX() = vecX;
+    kalmanFilter.predictEkf(egoMotionModel, vecU);
+
+    EXPECT_NEAR(kalmanFilter.vecX()[0], vecX[0] + vecU[0] * std::cos(vecX[2] + (vecU[1] / 2.0F)), 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[1], vecX[1] + vecU[0] * std::sin(vecX[2] + (vecU[1] / 2.0F)), 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2] + vecU[1], 0.0001F);
+
+    // moving forward + oriented 45 degrees
+    vecX << 0.0F, 0.0F, -M_PI / 4.0F;
+    vecU << 0.5F, 0.0F;
+
+    kalmanFilter.vecX() = vecX;
+    kalmanFilter.predictEkf(egoMotionModel, vecU);
+
+    EXPECT_NEAR(kalmanFilter.vecX()[0], vecX[0] + vecU[0] * std::cos(vecX[2] + (vecU[1] / 2.0F)), 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[1], vecX[1] + vecU[0] * std::sin(vecX[2] + (vecU[1] / 2.0F)), 0.0001F);
+    EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2] + vecU[1], 0.0001F);
 }
