@@ -3,6 +3,9 @@ set(TEST_APP_NAME ${PROJECT_NAME}_Test)
 
 enable_testing()
 
+set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+set(BUILD_GTEST ON CACHE BOOL "" FORCE)
+
 # find_package(GTest REQUIRED)
 # include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
     
@@ -16,7 +19,6 @@ add_executable(${TEST_APP_NAME}
 
 target_link_libraries(${TEST_APP_NAME} PRIVATE
     GTest::gtest_main
-    GTest::gmock
     OpenKF
 )
 
