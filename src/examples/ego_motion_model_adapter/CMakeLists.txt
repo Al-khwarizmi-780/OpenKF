@@ -29,3 +29,4 @@ target_link_libraries(${APPLICATION_NAME}
 target_include_directories(${APPLICATION_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../>
 )
+
