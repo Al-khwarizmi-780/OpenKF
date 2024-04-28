@@ -1,0 +1,8 @@
+{
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "clang-format.executable": "${workspaceFolder}/.clang-format",
+    "clang-format.style": "file",
+    "clang-format.fallbackStyle": "Google",
+    "clang-format.language.cpp.enable": true,
+}

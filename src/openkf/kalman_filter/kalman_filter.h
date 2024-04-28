@@ -12,120 +12,130 @@
 #ifndef KALMAN_FILTER_LIB_H
 #define KALMAN_FILTER_LIB_H
 
-#include "types.h"
 #include "motion_model/motion_model.h"
+#include "types.h"
 
 namespace kf
 {
-    template<int32_t DIM_X, int32_t DIM_Z>
-    class KalmanFilter
-    {
-    public:
+template <int32_t DIM_X, int32_t DIM_Z>
+class KalmanFilter
+{
+ public:
+  KalmanFilter() {}
 
-        KalmanFilter()
-        {
+  ~KalmanFilter() {}
 
-        }
+  virtual Vector<DIM_X>& vecX() { return m_vecX; }
+  virtual const Vector<DIM_X>& vecX() const { return m_vecX; }
 
-        ~KalmanFilter()
-        {
+  virtual Matrix<DIM_X, DIM_X>& matP() { return m_matP; }
+  virtual const Matrix<DIM_X, DIM_X>& matP() const { return m_matP; }
 
-        }
+  ///
+  /// @brief predict state with a linear process model.
+  /// @param matF state transition matrix
+  /// @param matQ process noise covariance matrix
+  ///
+  void predictLKF(const Matrix<DIM_X, DIM_X>& matF,
+                  const Matrix<DIM_X, DIM_X>& matQ)
+  {
+    m_vecX = matF * m_vecX;
+    m_matP = matF * m_matP * matF.transpose() + matQ;
+  }
 
-        virtual Vector<DIM_X> & vecX() { return m_vecX; }
-        virtual const Vector<DIM_X> & vecX() const { return m_vecX; }
+  ///
+  /// @brief correct state of with a linear measurement model.
+  /// @param matZ measurement vector
+  /// @param matR measurement noise covariance matrix
+  /// @param matH measurement transition matrix (measurement model)
+  ///
+  void correctLKF(const Vector<DIM_Z>& vecZ, const Matrix<DIM_Z, DIM_Z>& matR,
+                  const Matrix<DIM_Z, DIM_X>& matH)
+  {
+    const Matrix<DIM_X, DIM_X> matI{
+        Matrix<DIM_X, DIM_X>::Identity()};  // Identity matrix
+    const Matrix<DIM_Z, DIM_Z> matSk{matH * m_matP * matH.transpose() +
+                                     matR};  // Innovation covariance
+    const Matrix<DIM_X, DIM_Z> matKk{m_matP * matH.transpose() *
+                                     matSk.inverse()};  // Kalman Gain
 
-        virtual Matrix<DIM_X, DIM_X> & matP() { return m_matP; }
-        virtual const Matrix<DIM_X, DIM_X> & matP() const { return m_matP; }
+    m_vecX = m_vecX + matKk * (vecZ - (matH * m_vecX));
+    m_matP = (matI - matKk * matH) * m_matP;
+  }
 
-        ///
-        /// @brief predict state with a linear process model.
-        /// @param matF state transition matrix
-        /// @param matQ process noise covariance matrix
-        ///
-        void predictLKF(const Matrix<DIM_X, DIM_X> & matF, const Matrix<DIM_X, DIM_X> & matQ)
-        {
-            m_vecX = matF * m_vecX;
-            m_matP = matF * m_matP * matF.transpose() + matQ;
-        }
+  ///
+  /// @brief predict state with a linear process model.
+  /// @param predictionModel prediction model function callback
+  /// @param matJacobF state jacobian matrix
+  /// @param matQ process noise covariance matrix
+  ///
+  template <typename PredictionModelCallback>
+  void predictEkf(PredictionModelCallback predictionModelFunc,
+                  const Matrix<DIM_X, DIM_X>& matJacobF,
+                  const Matrix<DIM_X, DIM_X>& matQ)
+  {
+    m_vecX = predictionModelFunc(m_vecX);
+    m_matP = matJacobF * m_matP * matJacobF.transpose() + matQ;
+  }
 
-        ///
-        /// @brief correct state of with a linear measurement model.
-        /// @param matZ measurement vector
-        /// @param matR measurement noise covariance matrix
-        /// @param matH measurement transition matrix (measurement model)
-        ///
-        void correctLKF(const Vector<DIM_Z> & vecZ, const Matrix<DIM_Z, DIM_Z> & matR, const Matrix<DIM_Z, DIM_X> & matH)
-        {
-            const Matrix<DIM_X, DIM_X> matI{ Matrix<DIM_X, DIM_X>::Identity() }; // Identity matrix
-            const Matrix<DIM_Z, DIM_Z> matSk{ matH * m_matP * matH.transpose() + matR }; // Innovation covariance
-            const Matrix<DIM_X, DIM_Z> matKk{ m_matP * matH.transpose() * matSk.inverse() }; // Kalman Gain
+  ///
+  /// @brief predict state with a linear process model.
+  /// @param motionModel prediction motion model function
+  ///
+  void predictEkf(motionmodel::MotionModel<DIM_X> const& motionModel)
+  {
+    Matrix<DIM_X, DIM_X> const matFk{motionModel.getJacobianFk(m_vecX)};
+    Matrix<DIM_X, DIM_X> const matQk{motionModel.getProcessNoiseCov(m_vecX)};
+    m_vecX = motionModel.f(m_vecX);
+    m_matP = matFk * m_matP * matFk.transpose() + matQk;
+  }
 
-            m_vecX = m_vecX + matKk * (vecZ - (matH * m_vecX));
-            m_matP = (matI - matKk * matH) * m_matP;
-        }
+  ///
+  /// @brief predict state with a linear process model with external input.
+  /// @param motionModel prediction motion model function
+  /// @param vecU input vector
+  ///
+  template <int32_t DIM_U>
+  void predictEkf(
+      motionmodel::MotionModelExtInput<DIM_X, DIM_U> const& motionModel,
+      Vector<DIM_U> const& vecU)
+  {
+    Matrix<DIM_X, DIM_X> const matFk{motionModel.getJacobianFk(m_vecX, vecU)};
+    Matrix<DIM_X, DIM_X> const matQk{
+        motionModel.getProcessNoiseCov(m_vecX, vecU)};
+    m_vecX = motionModel.f(m_vecX, vecU);
+    m_matP = matFk * m_matP * matFk.transpose() + matQk;
+  }
 
-        ///
-        /// @brief predict state with a linear process model.
-        /// @param predictionModel prediction model function callback
-        /// @param matJacobF state jacobian matrix
-        /// @param matQ process noise covariance matrix
-        ///
-        template<typename PredictionModelCallback>
-        void predictEkf(PredictionModelCallback predictionModelFunc, const Matrix<DIM_X, DIM_X> & matJacobF, const Matrix<DIM_X, DIM_X> & matQ)
-        {
-            m_vecX = predictionModelFunc(m_vecX);
-            m_matP = matJacobF * m_matP * matJacobF.transpose() + matQ;
-        }
+  ///
+  /// @brief correct state of with a linear measurement model.
+  /// @param measurementModel measurement model function callback
+  /// @param matZ measurement vector
+  /// @param matR measurement noise covariance matrix
+  /// @param matJcobH measurement jacobian matrix
+  ///
+  template <typename MeasurementModelCallback>
+  void correctEkf(MeasurementModelCallback measurementModelFunc,
+                  const Vector<DIM_Z>& vecZ, const Matrix<DIM_Z, DIM_Z>& matR,
+                  const Matrix<DIM_Z, DIM_X>& matJcobH)
+  {
+    const Matrix<DIM_X, DIM_X> matI{
+        Matrix<DIM_X, DIM_X>::Identity()};  // Identity matrix
+    const Matrix<DIM_Z, DIM_Z> matSk{matJcobH * m_matP * matJcobH.transpose() +
+                                     matR};  // Innovation covariance
+    const Matrix<DIM_X, DIM_Z> matKk{m_matP * matJcobH.transpose() *
+                                     matSk.inverse()};  // Kalman Gain
 
-        ///
-        /// @brief predict state with a linear process model.
-        /// @param motionModel prediction motion model function
-        ///
-        void predictEkf(motionmodel::MotionModel<DIM_X> const & motionModel)
-        {
-            Matrix<DIM_X, DIM_X> const matFk{ motionModel.getJacobianFk(m_vecX) };
-            Matrix<DIM_X, DIM_X> const matQk{ motionModel.getProcessNoiseCov(m_vecX) };
-            m_vecX = motionModel.f(m_vecX);
-            m_matP = matFk * m_matP * matFk.transpose() + matQk;
-        }
+    m_vecX = m_vecX + matKk * (vecZ - measurementModelFunc(m_vecX));
+    m_matP = (matI - matKk * matJcobH) * m_matP;
+  }
 
-        ///
-        /// @brief predict state with a linear process model with external input.
-        /// @param motionModel prediction motion model function
-        /// @param vecU input vector
-        ///
-        template<int32_t DIM_U>
-        void predictEkf(motionmodel::MotionModelExtInput<DIM_X, DIM_U> const & motionModel, Vector<DIM_U> const & vecU)
-        {
-            Matrix<DIM_X, DIM_X> const matFk{ motionModel.getJacobianFk(m_vecX, vecU) };
-            Matrix<DIM_X, DIM_X> const matQk{ motionModel.getProcessNoiseCov(m_vecX, vecU) };
-            m_vecX = motionModel.f(m_vecX, vecU);
-            m_matP = matFk * m_matP * matFk.transpose() + matQk;
-        }
+ protected:
+  Vector<DIM_X> m_vecX{
+      Vector<DIM_X>::Zero()};  /// @brief estimated state vector
+  Matrix<DIM_X, DIM_X> m_matP{
+      Matrix<DIM_X, DIM_X>::Zero()};  /// @brief state covariance matrix
+};
+}  // namespace kf
 
-        ///
-        /// @brief correct state of with a linear measurement model.
-        /// @param measurementModel measurement model function callback
-        /// @param matZ measurement vector
-        /// @param matR measurement noise covariance matrix
-        /// @param matJcobH measurement jacobian matrix
-        ///
-        template<typename MeasurementModelCallback>
-        void correctEkf(MeasurementModelCallback measurementModelFunc,const Vector<DIM_Z> & vecZ, const Matrix<DIM_Z, DIM_Z> & matR, const Matrix<DIM_Z, DIM_X> & matJcobH)
-        {
-            const Matrix<DIM_X, DIM_X> matI{ Matrix<DIM_X, DIM_X>::Identity() }; // Identity matrix
-            const Matrix<DIM_Z, DIM_Z> matSk{ matJcobH * m_matP * matJcobH.transpose() + matR }; // Innovation covariance
-            const Matrix<DIM_X, DIM_Z> matKk{ m_matP * matJcobH.transpose() * matSk.inverse() }; // Kalman Gain
-
-            m_vecX = m_vecX + matKk * (vecZ - measurementModelFunc(m_vecX));
-            m_matP = (matI - matKk * matJcobH) * m_matP;
-        }
-
-    protected:
-        Vector<DIM_X> m_vecX{ Vector<DIM_X>::Zero() }; /// @brief estimated state vector
-        Matrix<DIM_X, DIM_X> m_matP{ Matrix<DIM_X, DIM_X>::Zero() }; /// @brief state covariance matrix
-    };
-}
-
-#endif // KALMAN_FILTER_LIB_H
+#endif  // KALMAN_FILTER_LIB_H
