@@ -1,102 +1,90 @@
-####Copyright 2022 Mohanad Youssef(Al - khwarizmi)####Use of
-        this source code is governed by an GPL
-        - 3.0 - style##license that can be found in the LICENSE file
-    or at##https
-    :  // opensource.org/licenses/GPL-3.0
-       ####@author Mohanad Youssef<mohanad.magdy.hammad @gmail.com>##
-       @file CMakeLists.h##
+##
+## Copyright 2022 Mohanad Youssef (Al-khwarizmi)
+##
+## Use of this source code is governed by an GPL-3.0 - style
+## license that can be found in the LICENSE file or at
+## https://opensource.org/licenses/GPL-3.0
+##
+## @author Mohanad Youssef <mohanad.magdy.hammad@gmail.com>
+## @file CMakeLists.h
+##
 
-#file(GLOB LIBRARY_FILES
-#"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
-#"${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-#)
+# file(GLOB LIBRARY_FILES
+#     "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+#     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+#     )
 
-       set(LIBRARY_SRC_FILES dummy.cpp motion_model / ego_motion_model.cpp)
+set(LIBRARY_SRC_FILES
+    dummy.cpp
+    motion_model/ego_motion_model.cpp
+)
 
-           set(LIBRARY_HDR_FILES types.h util.h kalman_filter /
-               kalman_filter.h kalman_filter /
-               unscented_transform.h kalman_filter /
-               unscented_kalman_filter.h kalman_filter /
-               square_root_ukf.h motion_model / motion_model.h motion_model /
-               ego_motion_model.h)
+set(LIBRARY_HDR_FILES
+    types.h
+    util.h
+    kalman_filter/kalman_filter.h
+    kalman_filter/unscented_transform.h
+    kalman_filter/unscented_kalman_filter.h
+    kalman_filter/square_root_ukf.h
+    motion_model/motion_model.h
+    motion_model/ego_motion_model.h
+)
 
-               set(LIBRARY_NAME ${PROJECT_NAME})
+set(LIBRARY_NAME ${PROJECT_NAME})
 
-                   add_library(${LIBRARY_NAME} ${LIBRARY_SRC_FILES} ${
-                       LIBRARY_HDR_FILES})
+add_library(${LIBRARY_NAME} ${LIBRARY_SRC_FILES} ${LIBRARY_HDR_FILES})
 
-                       set_target_properties(${
-                           LIBRARY_NAME} PROPERTIES LINKER_LANGUAGE
-                                                 CXX) target_link_libraries(${
-                           LIBRARY_NAME} PUBLIC Eigen3::Eigen)
+set_target_properties(${LIBRARY_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+target_link_libraries(${LIBRARY_NAME} PUBLIC Eigen3::Eigen)
 
-                           if (MSVC)
-#https:  // stackoverflow.com/a/18635749
-                               set_property(TARGET ${
-                                   LIBRARY_NAME} PROPERTY MSVC_RUNTIME_LIBRARY
-                                            "MultiThreaded$<$<CONFIG:Debug>:"
-                                            "Debug>") endif(MSVC)
+if (MSVC)
+    # https://stackoverflow.com/a/18635749
+    set_property(TARGET ${LIBRARY_NAME} PROPERTY
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif(MSVC)
 
-                                   target_include_directories(
-                                       ${LIBRARY_NAME} PUBLIC $<
-                                           BUILD_INTERFACE : ${CMAKE_CURRENT_SOURCE_DIR}>
-                                           $<INSTALL_INTERFACE : ${CMAKE_INSTALL_PREFIX} /
-                                             ${INCLUDE_INSTALL_DIR}>)
+target_include_directories(${LIBRARY_NAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>
+)
 
-                                       include(CMakePackageConfigHelpers)
+include(CMakePackageConfigHelpers)
 
-                                           configure_package_config_file(
-                                               ${CMAKE_CURRENT_SOURCE_DIR} /
-                                               conf /
-                                               Config.cmake.in ${
-                                                   CMAKE_CURRENT_BINARY_DIR} /
-                                               ${LIBRARY_NAME} Config
-                                                   .cmake INSTALL_DESTINATION ${
-                                                       CONFIG_INSTALL_DIR} PATH_VARS
-                                                       INCLUDE_FOLDER)
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/conf/Config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}Config.cmake
+    INSTALL_DESTINATION ${CONFIG_INSTALL_DIR}
+    PATH_VARS INCLUDE_FOLDER
+)
 
-                                               write_basic_package_version_file(
-                                                   ${CMAKE_CURRENT_BINARY_DIR} /
-                                                   ${LIBRARY_NAME} ConfigVersion
-                                                       .cmake
-                                                           VERSION 1.0.0 COMPATIBILITY
-                                                               SameMajorVersion)
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}ConfigVersion.cmake
+    VERSION 1.0.0
+    COMPATIBILITY SameMajorVersion
+)
 
-                                                   install(
-                                                       FILES ${
-                                                           LIBRARY_HDR_FILES} DESTINATION
-                                                           ${INCLUDE_INSTALL_DIR})
+install(
+    FILES ${LIBRARY_HDR_FILES} 
+    DESTINATION ${INCLUDE_INSTALL_DIR}
+)
 
-                                                       install(
-                                                           FILES ${
-                                                               CMAKE_CURRENT_BINARY_DIR} /
-                                                           ${LIBRARY_NAME} Config
-                                                               .cmake ${
-                                                                   CMAKE_CURRENT_BINARY_DIR} /
-                                                           ${LIBRARY_NAME} ConfigVersion
-                                                               .cmake DESTINATION
-                                                                   ${CONFIG_INSTALL_DIR})
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}Config.cmake
+          ${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}ConfigVersion.cmake
+    DESTINATION ${CONFIG_INSTALL_DIR}
+)
 
-                                                           install(
-                                                               TARGETS ${
-                                                                   LIBRARY_NAME} EXPORT
-                                                               "${TARGETS_"
-                                                               "EXPORT_"
-                                                               "NAME}" LIBRARY
-                                                                   DESTINATION
-                                                               "${LIBRARY_"
-                                                               "INSTALL_"
-                                                               "DIR}" ARCHIVE
-                                                                   DESTINATION
-                                                               "${LIBRARY_"
-                                                               "INSTALL_"
-                                                               "DIR}" INCLUDES
-                                                                   DESTINATION
-                                                               "${INCLUDE_"
-                                                               "FOLDER}")
+install(
+    TARGETS ${LIBRARY_NAME} 
+    EXPORT "${TARGETS_EXPORT_NAME}"
+    LIBRARY DESTINATION "${LIBRARY_INSTALL_DIR}"
+    ARCHIVE DESTINATION "${LIBRARY_INSTALL_DIR}"
+    INCLUDES DESTINATION "${INCLUDE_FOLDER}"
+)
 
-#Config
-#* <prefix> / lib / cmake / OpenKF / OpenKFTargets.cmake
-                                                               install(EXPORT ${
-                                                                   TARGETS_EXPORT_NAME} DESTINATION
-                                                                           ${CONFIG_INSTALL_DIR})
+# Config
+#   * <prefix>/lib/cmake/OpenKF/OpenKFTargets.cmake
+install(
+    EXPORT ${TARGETS_EXPORT_NAME} 
+    DESTINATION ${CONFIG_INSTALL_DIR}
+)

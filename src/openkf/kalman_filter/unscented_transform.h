@@ -12,9 +12,9 @@
 #ifndef UNSCENTED_TRANSFORM_H
 #define UNSCENTED_TRANSFORM_H
 
-#include "Eigen/src/Cholesky/LLT.h"
 #include "types.h"
 #include "util.h"
+#include "Eigen/src/Cholesky/LLT.h"
 
 namespace kf
 {
