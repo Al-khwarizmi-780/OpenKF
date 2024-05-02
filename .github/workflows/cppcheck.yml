@@ -11,23 +11,22 @@ jobs:
         uses: deep5050/cppcheck-action@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN}}
-          check_library:
-          skip_preprocessor:
-          enable:
-          exclude_check:
-          inconclusive:
-          inline_suppression:
-          force_language:
-          force:
-          max_ctu_depth:
-          platform:
-          std:
-          output_file:
-          other_options:
+        #   check_library:
+        #   skip_preprocessor:
+          enable: all
+        #   exclude_check:
+        #   inconclusive:
+        #   inline_suppression:
+          force_language: c++
+        #   force:
+        #   max_ctu_depth:
+        #   platform:
+          std: c++11
+        #   output_file:
+        #   other_options:
 
       - name: publish report    
         uses: mikeal/publish-to-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: 'main' # your branch name goes here
-          
