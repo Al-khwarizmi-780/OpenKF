@@ -14,7 +14,7 @@ jobs:
         #   check_library:
         #   skip_preprocessor:
           enable: all
-        #   exclude_check:
+          exclude_check: ../../src/third_party
         #   inconclusive:
         #   inline_suppression:
           force_language: c++
