@@ -1,32 +1,19 @@
-name: cppcheck-action
-on: [push]
+name: Cppcheck
+
+on:
+  push:
+  pull_request:
 
 jobs:
-  build:
-    name: cppcheck
+  cppcheck:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: cppcheck
-        uses: deep5050/cppcheck-action@main
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN}}
-        #   check_library:
-        #   skip_preprocessor:
-          enable: all
-          exclude_check: ../../src/third_party/**
-        #   inconclusive:
-        #   inline_suppression:
-          force_language: c++
-        #   force:
-        #   max_ctu_depth:
-        #   platform:
-          std: c++11
-        #   output_file:
-        #   other_options:
 
-      - name: publish report    
-        uses: mikeal/publish-to-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH_NAME: 'main' # your branch name goes here
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install cppcheck
+      run: sudo apt-get install -y cppcheck
+
+    - name: Run cppcheck
+      run: cppcheck --version && cppcheck . --error-exitcode=1
