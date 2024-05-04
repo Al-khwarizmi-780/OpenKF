@@ -1,19 +1,32 @@
-name: Cppcheck
-
-on:
-  push:
-  pull_request:
+name: cppcheck-action
+on: [push]
 
 jobs:
-  cppcheck:
+  build:
+    name: cppcheck
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - name: cppcheck
+        uses: deep5050/cppcheck-action@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN}}
+          # check_library:
+          # skip_preprocessor:
+          # enable:
+          exclude_check: src/third_party
+          # inconclusive:
+          # inline_suppression:
+          # force_language:
+          # force:
+          # max_ctu_depth:
+          # platform:
+          # std:
+          # output_file:
+          # other_options:
 
-    - name: Install cppcheck
-      run: sudo apt-get install -y cppcheck
-
-    - name: Run cppcheck
-      run: cppcheck --version && cppcheck src/openkf/ src/examples/ --error-exitcode=1
+      - name: publish report    
+        uses: mikeal/publish-to-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: 'main' # your branch name goes here
