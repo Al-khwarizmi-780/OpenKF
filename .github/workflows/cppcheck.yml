@@ -16,4 +16,4 @@ jobs:
       run: sudo apt-get install -y cppcheck
 
     - name: Run cppcheck
-      run: cppcheck --version && cppcheck ../../src/openkf/ ../../src/examples/ --error-exitcode=1
+      run: cppcheck --version && cppcheck src/openkf/ src/examples/ --error-exitcode=1
