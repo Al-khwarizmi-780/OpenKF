@@ -1,2 +1,5 @@
-add_subdirectory(StateEstimation1D)
-add_subdirectory(EkfRangeSensor)
+set(EXAMPLE_EXECUTABLE_PREFIX "example_")
+
+add_subdirectory(kf_state_estimation)
+add_subdirectory(ekf_range_sensor)
+add_subdirectory(unscented_transform)
