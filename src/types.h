@@ -27,37 +27,37 @@ using Vector = Eigen::Matrix<float32_t, ROW, 1>;
 
 struct PointXY
 {
-    PointXY() : x{0.0}, y{0.0} {}
-    PointXY(double const _x, double const _y) : x{_x}, y{_y} {}
+  PointXY() : x{0.0}, y{0.0} {}
+  PointXY(double const _x, double const _y) : x{_x}, y{_y} {}
 
-    PointXY operator+(PointXY const& p2) const
-    {
-        return PointXY(x + p2.x, y + p2.y);
-    }
-    PointXY operator-(PointXY const& p2) const
-    {
-        return PointXY(x - p2.x, y - p2.y);
-    }
-    double operator*(PointXY const& p2) const { return x * p2.x + y * p2.y; }
+  PointXY operator+(PointXY const& p2) const
+  {
+    return PointXY(x + p2.x, y + p2.y);
+  }
+  PointXY operator-(PointXY const& p2) const
+  {
+    return PointXY(x - p2.x, y - p2.y);
+  }
+  double operator*(PointXY const& p2) const { return x * p2.x + y * p2.y; }
 
-    double x;
-    double y;
+  double x;
+  double y;
 };
 using VecXY = PointXY;
 
 struct Dimension
 {
-    Dimension() : width{0.0}, length{0.0} {}
-    Dimension(double const w, double const l) : width{w}, length{l} {}
-    double width;
-    double length;
+  Dimension() : width{0.0}, length{0.0} {}
+  Dimension(double const w, double const l) : width{w}, length{l} {}
+  double width;
+  double length;
 };
 
 struct Rectangle
 {
-    PointXY center;
-    Dimension dimension;
-    double angle;
+  PointXY center;
+  Dimension dimension;
+  double angle;
 };
 
 }  // namespace kf
