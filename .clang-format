@@ -18,7 +18,7 @@ IndentPPDirectives: None
 IndentWidth: '4'
 Language: Cpp
 MaxEmptyLinesToKeep: '1'
-NamespaceIndentation: '4'
+NamespaceIndentation: None
 PointerAlignment: Left
 SpaceBeforeParens: ControlStatements
 SpacesBeforeTrailingComments: '2'
