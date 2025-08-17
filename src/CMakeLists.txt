@@ -30,8 +30,6 @@ set(LIBRARY_HDR_FILES
     kalman_filter/square_root_ukf.h
     motion_model/motion_model.h
     motion_model/ego_motion_model.h
-    geom/geom.h
-    geom/geom.cpp
 )
 
 set(LIBRARY_NAME ${PROJECT_NAME})
