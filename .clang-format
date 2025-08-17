@@ -15,7 +15,7 @@ ColumnLimit: '80'
 ContinuationIndentWidth: '4'
 IncludeBlocks: Preserve
 IndentPPDirectives: None
-IndentWidth: '4'
+IndentWidth: '2'
 Language: Cpp
 MaxEmptyLinesToKeep: '1'
 NamespaceIndentation: None
