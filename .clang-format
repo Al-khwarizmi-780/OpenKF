@@ -15,10 +15,10 @@ ColumnLimit: '80'
 ContinuationIndentWidth: '4'
 IncludeBlocks: Preserve
 IndentPPDirectives: None
-IndentWidth: '2'
+IndentWidth: '4'
 Language: Cpp
 MaxEmptyLinesToKeep: '1'
-NamespaceIndentation: None
+NamespaceIndentation: '4'
 PointerAlignment: Left
 SpaceBeforeParens: ControlStatements
 SpacesBeforeTrailingComments: '2'

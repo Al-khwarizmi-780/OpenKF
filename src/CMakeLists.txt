@@ -14,6 +14,8 @@
 #     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 #     )
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 set(LIBRARY_SRC_FILES
     dummy.cpp
     motion_model/ego_motion_model.cpp
@@ -28,6 +30,8 @@ set(LIBRARY_HDR_FILES
     kalman_filter/square_root_ukf.h
     motion_model/motion_model.h
     motion_model/ego_motion_model.h
+    geom/geom.h
+    geom/geom.cpp
 )
 
 set(LIBRARY_NAME ${PROJECT_NAME})
