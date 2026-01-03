@@ -6,7 +6,7 @@ namespace motionmodel
 {
 Vector<DIM_X> EgoMotionModel::f(Vector<DIM_X> const& vecX,
                                 Vector<DIM_U> const& vecU,
-                                Vector<DIM_X> const& vecQ) const
+                                Vector<DIM_X> const& vecQ, float32_t dt) const
 {
   Vector<DIM_X> vecXout;
   float32_t& oPosX{vecXout[0]};
@@ -35,7 +35,7 @@ Vector<DIM_X> EgoMotionModel::f(Vector<DIM_X> const& vecX,
 }
 
 Matrix<DIM_X, DIM_X> EgoMotionModel::getProcessNoiseCov(
-    Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU) const
+    Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU, float32_t dt) const
 {
   Matrix<DIM_X, DIM_X> matQk;
 
@@ -78,8 +78,9 @@ Matrix<DIM_X, DIM_X> EgoMotionModel::getProcessNoiseCov(
   return matQk;
 }
 
-Matrix<DIM_X, DIM_X> EgoMotionModel::getInputNoiseCov(
-    Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU) const
+Matrix<DIM_X, DIM_X> EgoMotionModel::getInputNoiseCov(Vector<DIM_X> const& vecX,
+                                                      Vector<DIM_U> const& vecU,
+                                                      float32_t dt) const
 {
   Matrix<DIM_X, DIM_X> matUk;
 
@@ -130,8 +131,9 @@ Matrix<DIM_X, DIM_X> EgoMotionModel::getInputNoiseCov(
   return matUk;
 }
 
-Matrix<DIM_X, DIM_X> EgoMotionModel::getJacobianFk(
-    Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU) const
+Matrix<DIM_X, DIM_X> EgoMotionModel::getJacobianFk(Vector<DIM_X> const& vecX,
+                                                   Vector<DIM_U> const& vecU,
+                                                   float32_t dt) const
 {
   Matrix<DIM_X, DIM_X> matFk;
 
@@ -170,8 +172,9 @@ Matrix<DIM_X, DIM_X> EgoMotionModel::getJacobianFk(
   return matFk;
 }
 
-Matrix<DIM_X, DIM_U> EgoMotionModel::getJacobianBk(
-    Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU) const
+Matrix<DIM_X, DIM_U> EgoMotionModel::getJacobianBk(Vector<DIM_X> const& vecX,
+                                                   Vector<DIM_U> const& vecU,
+                                                   float32_t dt) const
 {
   Matrix<DIM_X, DIM_U> matBk;
 

@@ -34,37 +34,47 @@ class EgoMotionModel : public MotionModelExtInput<EgoMotionModel, DIM_X, DIM_U>
   /// @param vecX State space vector \vec{x}
   /// @param vecU Input space vector \vec{u}
   /// @param vecQ State white gaussian noise vector \vec{q}
+  /// @param dt Time step between state updates (unit: seconds)
   /// @return Predicted/ propagated state space vector
   Vector<DIM_X> f(Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU,
-                  Vector<DIM_X> const& vecQ = Vector<DIM_X>::Zero()) const;
+                  Vector<DIM_X> const& vecQ = Vector<DIM_X>::Zero(),
+                  float32_t dt = 1.0F) const;
 
   /// @brief Get the process noise covariance Q
   /// @param vecX State space vector \vec{x}
   /// @param vecU Input space vector \vec{u}
+  /// @param dt Time step between state updates (unit: seconds)
   /// @return The process noise covariance Q
   Matrix<DIM_X, DIM_X> getProcessNoiseCov(Vector<DIM_X> const& vecX,
-                                          Vector<DIM_U> const& vecU) const;
+                                          Vector<DIM_U> const& vecU,
+                                          float32_t dt = 1.0F) const;
 
   /// @brief Get the input noise covariance U
   /// @param vecX State space vector \vec{x}
   /// @param vecU Input space vector \vec{u}
+  /// @param dt Time step between state updates (unit: seconds)
   /// @return The input noise covariance U
   Matrix<DIM_X, DIM_X> getInputNoiseCov(Vector<DIM_X> const& vecX,
-                                        Vector<DIM_U> const& vecU) const;
+                                        Vector<DIM_U> const& vecU,
+                                        float32_t dt = 1.0F) const;
 
   /// @brief Method that calculates the jacobians of the state transition model.
   /// @param vecX State Space vector \vec{x}
   /// @param vecU Input Space vector \vec{u}
+  /// @param dt Time step between state updates (unit: seconds)
   /// @return The jacobians of the state transition model.
   Matrix<DIM_X, DIM_X> getJacobianFk(Vector<DIM_X> const& vecX,
-                                     Vector<DIM_U> const& vecU) const;
+                                     Vector<DIM_U> const& vecU,
+                                     float32_t dt = 1.0F) const;
 
   /// @brief Method that calculates the jacobians of the input transition model.
   /// @param vecX State Space vector \vec{x}
   /// @param vecU Input Space vector \vec{u}
+  /// @param dt Time step between state updates (unit: seconds)
   /// @return The jacobians of the input transition model.
   Matrix<DIM_X, DIM_U> getJacobianBk(Vector<DIM_X> const& vecX,
-                                     Vector<DIM_U> const& vecU) const;
+                                     Vector<DIM_U> const& vecU,
+                                     float32_t dt = 1.0F) const;
 
   /// @brief Setter for noise variance of pose-x state.
   /// @param val variance value
