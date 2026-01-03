@@ -57,7 +57,7 @@ class KalmanFilter
                   const Matrix<DIM_Z, DIM_X>& matH)
   {
     const Matrix<DIM_X, DIM_X> matI{
-      Matrix<DIM_X, DIM_X>::Identity()};  // Identity matrix
+        Matrix<DIM_X, DIM_X>::Identity()};  // Identity matrix
 
     // Innovation covariance
     Matrix<DIM_Z, DIM_Z> matSk{matH * m_matP * matH.transpose() + matR};
@@ -116,13 +116,13 @@ class KalmanFilter
   /// @param vecU input vector
   ///
   template <class Derived, int32_t DIM_U>
-  void predictEkf(
-    motionmodel::MotionModelExtInput<Derived, DIM_X, DIM_U> const& motionModel,
-    Vector<DIM_U> const& vecU)
+  void predictEkf(motionmodel::MotionModelExtInput<Derived, DIM_X, DIM_U> const&
+                      motionModel,
+                  Vector<DIM_U> const& vecU)
   {
     Matrix<DIM_X, DIM_X> const matFk{motionModel.getJacobianFk(m_vecX, vecU)};
     Matrix<DIM_X, DIM_X> const matQk{
-      motionModel.getProcessNoiseCov(m_vecX, vecU)};
+        motionModel.getProcessNoiseCov(m_vecX, vecU)};
     m_vecX = motionModel.f(m_vecX, vecU);
     m_matP = matFk * m_matP * matFk.transpose() + matQk;
 
@@ -143,7 +143,7 @@ class KalmanFilter
                   const Matrix<DIM_Z, DIM_X>& matJcobH)
   {
     const Matrix<DIM_X, DIM_X> matI{
-      Matrix<DIM_X, DIM_X>::Identity()};  // Identity matrix
+        Matrix<DIM_X, DIM_X>::Identity()};  // Identity matrix
 
     // Innovation covariance
     Matrix<DIM_Z, DIM_Z> matSk{matJcobH * m_matP * matJcobH.transpose() + matR};
@@ -164,9 +164,9 @@ class KalmanFilter
 
  protected:
   Vector<DIM_X> m_vecX{
-    Vector<DIM_X>::Zero()};  /// @brief estimated state vector
+      Vector<DIM_X>::Zero()};  /// @brief estimated state vector
   Matrix<DIM_X, DIM_X> m_matP{
-    Matrix<DIM_X, DIM_X>::Zero()};  /// @brief state covariance matrix
+      Matrix<DIM_X, DIM_X>::Zero()};  /// @brief state covariance matrix
 
   ///
   /// @brief utility function to handle matrix inversion with regularization if
@@ -185,8 +185,8 @@ class KalmanFilter
       // diagonal to make it invertible.
       float lambda = 1e-6F;  // Regularization parameter
       Matrix<DIM_Z, DIM_Z> matSReg{
-        matS +
-        lambda * Matrix<DIM_Z, DIM_Z>::Identity(matS.rows(), matS.cols())};
+          matS +
+          lambda * Matrix<DIM_Z, DIM_Z>::Identity(matS.rows(), matS.cols())};
 
       return matSReg.inverse();
     }
