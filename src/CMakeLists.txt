@@ -21,6 +21,7 @@ set(LIBRARY_SRC_FILES
     motion_model/ego_motion_model.cpp
     motion_model/cv_motion_model.cpp
     motion_model/ca_motion_model.cpp
+    motion_model/ct_motion_model.cpp
 )
 
 set(LIBRARY_HDR_FILES
@@ -34,6 +35,7 @@ set(LIBRARY_HDR_FILES
     motion_model/ego_motion_model.h
     motion_model/cv_motion_model.h
     motion_model/ca_motion_model.h
+    motion_model/ct_motion_model.h
 )
 
 set(LIBRARY_NAME ${PROJECT_NAME})
