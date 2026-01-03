@@ -4,11 +4,8 @@ namespace kf
 {
 namespace motionmodel
 {
-/// @brief Prediction motion model function that propagate the previous state
-/// to next state in time.
-/// @param vecX State space vector \vec{x}
+
 Vector<DIM_X_CV> CvMotionModel::f(Vector<DIM_X_CV> const& vecX,
-                                  Vector<DIM_X_CV> const& vecQ,
                                   float32_t dt) const
 {
   Vector<DIM_X_CV> vecXPred;
@@ -19,16 +16,14 @@ Vector<DIM_X_CV> CvMotionModel::f(Vector<DIM_X_CV> const& vecX,
   // [ vel_x ]   [ 0 0 1 0  ] [ vel_x ]   [ q3 ]
   // [ vel_y ]   [ 0 0 0 1  ] [ vel_y ]   [ q4 ]
 
-  vecXPred[0] = vecX[0] + vecX[2] * dt + vecQ[0];
-  vecXPred[1] = vecX[1] + vecX[3] * dt + vecQ[1];
-  vecXPred[2] = vecX[2] + vecQ[2];
-  vecXPred[3] = vecX[3] + vecQ[3];
+  vecXPred[IDX_PX] = vecX[IDX_PX] + vecX[IDX_VX] * dt;
+  vecXPred[IDX_PY] = vecX[IDX_PY] + vecX[IDX_VY] * dt;
+  vecXPred[IDX_VX] = vecX[IDX_VX];
+  vecXPred[IDX_VY] = vecX[IDX_VY];
 
   return vecXPred;
 }
-/// @brief Get the process noise covariance Q
-/// @param sigma Standard deviation of the process noise
-/// @param dt Time step between state updates (unit: seconds)
+
 Matrix<DIM_X_CV, DIM_X_CV> CvMotionModel::getProcessNoiseCov(float32_t sigma,
                                                              float32_t dt) const
 {
@@ -45,32 +40,29 @@ Matrix<DIM_X_CV, DIM_X_CV> CvMotionModel::getProcessNoiseCov(float32_t sigma,
   const float32_t dt3 = dt2 * dt;
   const float32_t dt4 = dt2 * dt2;
 
-  matQ(0, 0) = sigma2 * (dt4) / 4.0F;
-  matQ(0, 1) = 0.0F;
-  matQ(0, 2) = sigma2 * (dt3) / 2.0F;
-  matQ(0, 3) = 0.0F;
+  matQ(IDX_PX, IDX_PX) = sigma2 * (dt4) / 4.0F;
+  matQ(IDX_PX, IDX_PY) = 0.0F;
+  matQ(IDX_PX, IDX_VX) = sigma2 * (dt3) / 2.0F;
+  matQ(IDX_PX, IDX_VY) = 0.0F;
 
-  matQ(1, 0) = 0.0F;
-  matQ(1, 1) = sigma2 * (dt4) / 4.0F;
-  matQ(1, 2) = 0.0F;
-  matQ(1, 3) = sigma2 * (dt3) / 2.0F;
+  matQ(IDX_PY, IDX_PX) = 0.0F;
+  matQ(IDX_PY, IDX_PY) = sigma2 * (dt4) / 4.0F;
+  matQ(IDX_PY, IDX_VX) = 0.0F;
+  matQ(IDX_PY, IDX_VY) = sigma2 * (dt3) / 2.0F;
 
-  matQ(2, 0) = sigma2 * (dt3) / 2.0F;
-  matQ(2, 1) = 0.0F;
-  matQ(2, 2) = sigma2 * (dt2);
-  matQ(2, 3) = 0.0F;
+  matQ(IDX_VX, IDX_PX) = sigma2 * (dt3) / 2.0F;
+  matQ(IDX_VX, IDX_PY) = 0.0F;
+  matQ(IDX_VX, IDX_VX) = sigma2 * (dt2);
+  matQ(IDX_VX, IDX_VY) = 0.0F;
 
-  matQ(3, 0) = 0.0F;
-  matQ(3, 1) = sigma2 * (dt3) / 2.0F;
-  matQ(3, 2) = 0.0F;
-  matQ(3, 3) = sigma2 * (dt2);
+  matQ(IDX_VY, IDX_PX) = 0.0F;
+  matQ(IDX_VY, IDX_PY) = sigma2 * (dt3) / 2.0F;
+  matQ(IDX_VY, IDX_VX) = 0.0F;
+  matQ(IDX_VY, IDX_VY) = sigma2 * (dt2);
 
   return matQ;
 }
 
-/// @brief Method that calculates the jacobians of the state transition model.
-/// @param vecX State Space vector \vec{x}
-/// @param dt Time step between state updates (unit: seconds)
 Matrix<DIM_X_CV, DIM_X_CV> CvMotionModel::getJacobianFk(
     Vector<DIM_X_CV> const& vecX, float32_t dt) const
 {
@@ -82,25 +74,25 @@ Matrix<DIM_X_CV, DIM_X_CV> CvMotionModel::getJacobianFk(
 
   Matrix<DIM_X_CV, DIM_X_CV> matFk;
 
-  matFk(0, 0) = 1.0F;
-  matFk(0, 1) = 0.0F;
-  matFk(0, 2) = dt;
-  matFk(0, 3) = 0.0F;
+  matFk(IDX_PX, IDX_PX) = 1.0F;
+  matFk(IDX_PX, IDX_PY) = 0.0F;
+  matFk(IDX_PX, IDX_VX) = dt;
+  matFk(IDX_PX, IDX_VY) = 0.0F;
 
-  matFk(1, 0) = 0.0F;
-  matFk(1, 1) = 1.0F;
-  matFk(1, 2) = 0.0F;
-  matFk(1, 3) = dt;
+  matFk(IDX_PY, IDX_PX) = 0.0F;
+  matFk(IDX_PY, IDX_PY) = 1.0F;
+  matFk(IDX_PY, IDX_VX) = 0.0F;
+  matFk(IDX_PY, IDX_VY) = dt;
 
-  matFk(2, 0) = 0.0F;
-  matFk(2, 1) = 0.0F;
-  matFk(2, 2) = 1.0F;
-  matFk(2, 3) = 0.0F;
+  matFk(IDX_VX, IDX_PX) = 0.0F;
+  matFk(IDX_VX, IDX_PY) = 0.0F;
+  matFk(IDX_VX, IDX_VX) = 1.0F;
+  matFk(IDX_VX, IDX_VY) = 0.0F;
 
-  matFk(3, 0) = 0.0F;
-  matFk(3, 1) = 0.0F;
-  matFk(3, 2) = 0.0F;
-  matFk(3, 3) = 1.0F;
+  matFk(IDX_VY, IDX_PX) = 0.0F;
+  matFk(IDX_VY, IDX_PY) = 0.0F;
+  matFk(IDX_VY, IDX_VX) = 0.0F;
+  matFk(IDX_VY, IDX_VY) = 1.0F;
 
   return matFk;
 }

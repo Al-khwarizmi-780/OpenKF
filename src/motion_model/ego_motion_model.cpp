@@ -5,31 +5,18 @@ namespace kf
 namespace motionmodel
 {
 Vector<DIM_X> EgoMotionModel::f(Vector<DIM_X> const& vecX,
-                                Vector<DIM_U> const& vecU,
-                                Vector<DIM_X> const& vecQ, float32_t dt) const
+                                Vector<DIM_U> const& vecU, float32_t dt) const
 {
+  float32_t const halfDeltaYaw{vecU[IDX_U_DYAW] / 2.0F};
+
   Vector<DIM_X> vecXout;
-  float32_t& oPosX{vecXout[0]};
-  float32_t& oPosY{vecXout[1]};
-  float32_t& oYaw{vecXout[2]};
 
-  float32_t const& iPosX{vecX[0]};
-  float32_t const& iPosY{vecX[1]};
-  float32_t const& iYaw{vecX[2]};
-
-  float32_t const& qPosX{vecQ[0]};
-  float32_t const& qPosY{vecQ[1]};
-  float32_t const& qYaw{vecQ[2]};
-
-  float32_t const& deltaDist{vecU[0]};
-  float32_t const& deltaYaw{vecU[1]};
-
-  float32_t const halfDeltaYaw{deltaYaw / 2.0F};
-  float32_t const iYawPlusHalfDeltaYaw{iYaw + halfDeltaYaw};
-
-  oPosX = iPosX + (deltaDist * std::cos(iYawPlusHalfDeltaYaw)) + qPosX;
-  oPosY = iPosY + (deltaDist * std::sin(iYawPlusHalfDeltaYaw)) + qPosY;
-  oYaw = iYaw + deltaYaw + qYaw;
+  vecXout[IDX_X_PTHETA] = vecX[IDX_X_PTHETA] + halfDeltaYaw;
+  vecXout[IDX_X_PX] =
+      vecX[IDX_X_PX] + (vecU[IDX_U_DISPL] * std::cos(vecXout[IDX_X_PTHETA]));
+  vecXout[IDX_X_PY] =
+      vecX[IDX_X_PY] + (vecU[IDX_U_DISPL] * std::sin(vecXout[IDX_X_PTHETA]));
+  vecXout[IDX_X_PTHETA] += halfDeltaYaw;
 
   return vecXout;
 }
@@ -39,22 +26,22 @@ Matrix<DIM_X, DIM_X> EgoMotionModel::getProcessNoiseCov(
 {
   Matrix<DIM_X, DIM_X> matQk;
 
-  float32_t& q11 = matQk(0, 0);
-  float32_t& q12 = matQk(0, 1);
-  float32_t& q13 = matQk(0, 2);
+  float32_t& q11 = matQk(IDX_X_PX, IDX_X_PX);
+  float32_t& q12 = matQk(IDX_X_PX, IDX_X_PY);
+  float32_t& q13 = matQk(IDX_X_PX, IDX_X_PTHETA);
 
-  float32_t& q21 = matQk(1, 0);
-  float32_t& q22 = matQk(1, 1);
-  float32_t& q23 = matQk(1, 2);
+  float32_t& q21 = matQk(IDX_X_PY, IDX_X_PX);
+  float32_t& q22 = matQk(IDX_X_PY, IDX_X_PY);
+  float32_t& q23 = matQk(IDX_X_PY, IDX_X_PTHETA);
 
-  float32_t& q31 = matQk(2, 0);
-  float32_t& q32 = matQk(2, 1);
-  float32_t& q33 = matQk(2, 2);
+  float32_t& q31 = matQk(IDX_X_PTHETA, IDX_X_PX);
+  float32_t& q32 = matQk(IDX_X_PTHETA, IDX_X_PY);
+  float32_t& q33 = matQk(IDX_X_PTHETA, IDX_X_PTHETA);
 
-  float32_t const& iYaw{vecX[2]};
+  float32_t const& iYaw{vecX[IDX_X_PTHETA]};
 
-  float32_t const& deltaDist{vecU[0]};
-  float32_t const& deltaYaw{vecU[1]};
+  float32_t const& deltaDist{vecU[IDX_U_DISPL]};
+  float32_t const& deltaYaw{vecU[IDX_U_DYAW]};
 
   float32_t const deltaDistSquare{deltaDist * deltaDist};
   float32_t const halfDeltaYaw{deltaYaw / 2.0F};
@@ -84,22 +71,22 @@ Matrix<DIM_X, DIM_X> EgoMotionModel::getInputNoiseCov(Vector<DIM_X> const& vecX,
 {
   Matrix<DIM_X, DIM_X> matUk;
 
-  float32_t& u11 = matUk(0, 0);
-  float32_t& u12 = matUk(0, 1);
-  float32_t& u13 = matUk(0, 2);
+  float32_t& u11 = matUk(IDX_X_PX, IDX_X_PX);
+  float32_t& u12 = matUk(IDX_X_PX, IDX_X_PY);
+  float32_t& u13 = matUk(IDX_X_PX, IDX_X_PTHETA);
 
-  float32_t& u21 = matUk(1, 0);
-  float32_t& u22 = matUk(1, 1);
-  float32_t& u23 = matUk(1, 2);
+  float32_t& u21 = matUk(IDX_X_PY, IDX_X_PX);
+  float32_t& u22 = matUk(IDX_X_PY, IDX_X_PY);
+  float32_t& u23 = matUk(IDX_X_PY, IDX_X_PTHETA);
 
-  float32_t& u31 = matUk(2, 0);
-  float32_t& u32 = matUk(2, 1);
-  float32_t& u33 = matUk(2, 2);
+  float32_t& u31 = matUk(IDX_X_PTHETA, IDX_X_PX);
+  float32_t& u32 = matUk(IDX_X_PTHETA, IDX_X_PY);
+  float32_t& u33 = matUk(IDX_X_PTHETA, IDX_X_PTHETA);
 
-  float32_t const& iYaw{vecX[2]};
+  float32_t const& iYaw{vecX[IDX_X_PTHETA]};
 
-  float32_t const& deltaDist{vecU[0]};
-  float32_t const& deltaYaw{vecU[1]};
+  float32_t const& deltaDist{vecU[IDX_U_DISPL]};
+  float32_t const& deltaYaw{vecU[IDX_U_DYAW]};
 
   float32_t const deltaDistSquare{deltaDist * deltaDist};
   float32_t const halfDeltaDistSquare{deltaDist / 2.0F};
@@ -137,22 +124,22 @@ Matrix<DIM_X, DIM_X> EgoMotionModel::getJacobianFk(Vector<DIM_X> const& vecX,
 {
   Matrix<DIM_X, DIM_X> matFk;
 
-  float32_t& df1dx1 = matFk(0, 0);
-  float32_t& df1dx2 = matFk(0, 1);
-  float32_t& df1dx3 = matFk(0, 2);
+  float32_t& df1dx1 = matFk(IDX_X_PX, IDX_X_PX);
+  float32_t& df1dx2 = matFk(IDX_X_PX, IDX_X_PY);
+  float32_t& df1dx3 = matFk(IDX_X_PX, IDX_X_PTHETA);
 
-  float32_t& df2dx1 = matFk(1, 0);
-  float32_t& df2dx2 = matFk(1, 1);
-  float32_t& df2dx3 = matFk(1, 2);
+  float32_t& df2dx1 = matFk(IDX_X_PY, IDX_X_PX);
+  float32_t& df2dx2 = matFk(IDX_X_PY, IDX_X_PY);
+  float32_t& df2dx3 = matFk(IDX_X_PY, IDX_X_PTHETA);
 
-  float32_t& df3dx1 = matFk(2, 0);
-  float32_t& df3dx2 = matFk(2, 1);
-  float32_t& df3dx3 = matFk(2, 2);
+  float32_t& df3dx1 = matFk(IDX_X_PTHETA, IDX_X_PX);
+  float32_t& df3dx2 = matFk(IDX_X_PTHETA, IDX_X_PY);
+  float32_t& df3dx3 = matFk(IDX_X_PTHETA, IDX_X_PTHETA);
 
-  float32_t const& iYaw{vecX[2]};
+  float32_t const& iYaw{vecX[IDX_X_PTHETA]};
 
-  float32_t const& deltaDist{vecU[0]};
-  float32_t const& deltaYaw{vecU[1]};
+  float32_t const& deltaDist{vecU[IDX_U_DISPL]};
+  float32_t const& deltaYaw{vecU[IDX_U_DYAW]};
 
   float32_t const halfDeltaYaw{deltaYaw / 2.0F};
   float32_t const iYawPlusHalfDeltaYaw{iYaw + halfDeltaYaw};
@@ -178,19 +165,19 @@ Matrix<DIM_X, DIM_U> EgoMotionModel::getJacobianBk(Vector<DIM_X> const& vecX,
 {
   Matrix<DIM_X, DIM_U> matBk;
 
-  float32_t& df1du1 = matBk(0, 0);
-  float32_t& df1du2 = matBk(0, 1);
+  float32_t& df1du1 = matBk(IDX_X_PX, IDX_U_DISPL);
+  float32_t& df1du2 = matBk(IDX_X_PX, IDX_U_DYAW);
 
-  float32_t& df2du1 = matBk(1, 0);
-  float32_t& df2du2 = matBk(1, 1);
+  float32_t& df2du1 = matBk(IDX_X_PY, IDX_U_DISPL);
+  float32_t& df2du2 = matBk(IDX_X_PY, IDX_U_DYAW);
 
-  float32_t& df3du1 = matBk(2, 0);
-  float32_t& df3du2 = matBk(2, 1);
+  float32_t& df3du1 = matBk(IDX_X_PTHETA, IDX_U_DISPL);
+  float32_t& df3du2 = matBk(IDX_X_PTHETA, IDX_U_DYAW);
 
-  float32_t const& iYaw{vecX[2]};
+  float32_t const& iYaw{vecX[IDX_X_PTHETA]};
 
-  float32_t const& deltaDist{vecU[0]};
-  float32_t const& deltaYaw{vecU[1]};
+  float32_t const& deltaDist{vecU[IDX_U_DISPL]};
+  float32_t const& deltaYaw{vecU[IDX_U_DYAW]};
 
   float32_t const halfDeltaDist{deltaDist / 2.0F};
   float32_t const halfDeltaYaw{deltaYaw / 2.0F};

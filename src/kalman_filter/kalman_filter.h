@@ -117,6 +117,7 @@ class KalmanFilter
   /// @brief predict state with a linear process model with external input.
   /// @param motionModel prediction motion model function
   /// @param vecU input vector
+  /// @param dt time step between state updates (unit: seconds)
   ///
   template <class Derived, int32_t DIM_U>
   void predictEkf(motionmodel::MotionModelExtInput<Derived, DIM_X, DIM_U> const&
@@ -129,9 +130,7 @@ class KalmanFilter
     Matrix<DIM_X, DIM_X> const matQk{
         motionModel.getProcessNoiseCov(m_vecX, vecU, dt)};
 
-    const Vector<DIM_X> vecQ = Vector<DIM_X>::Zero();
-
-    m_vecX = motionModel.f(m_vecX, vecU, vecQ, dt);
+    m_vecX = motionModel.f(m_vecX, vecU, dt);
     m_matP = matFk * m_matP * matFk.transpose() + matQk;
 
     // Ensure symmetry of covariance matrix

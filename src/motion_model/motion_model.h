@@ -17,14 +17,11 @@ class MotionModel
   /// @brief Prediction motion model function that propagate the previous state
   /// to next state in time.
   /// @param vecX State space vector \vec{x}
-  /// @param vecQ State white gaussian noise vector \vec{q}
   /// @param dt Time step between state updates (unit: seconds)
   /// @return Predicted/ propagated state space vector
-  Vector<DIM_X> f(Vector<DIM_X> const& vecX,
-                  Vector<DIM_X> const& vecQ = Vector<DIM_X>::Zero(),
-                  float dt = 1.0F) const
+  Vector<DIM_X> f(Vector<DIM_X> const& vecX, float32_t dt = 1.0F) const
   {
-    return static_cast<Derived const*>(this)->f(vecX, vecQ, dt);
+    return static_cast<Derived const*>(this)->f(vecX, dt);
   }
 
   /// @brief Get the process noise covariance Q
@@ -42,7 +39,7 @@ class MotionModel
   /// @param dt Time step between state updates (unit: seconds)
   /// @return The jacobians of the state transition model.
   Matrix<DIM_X, DIM_X> getJacobianFk(Vector<DIM_X> const& vecX,
-                                     float dt = 1.0F) const
+                                     float32_t dt = 1.0F) const
   {
     return static_cast<Derived const*>(this)->getJacobianFk(vecX, dt);
   }
@@ -60,14 +57,12 @@ class MotionModelExtInput
   /// to next state in time.
   /// @param vecX State space vector \vec{x}
   /// @param vecU Input space vector \vec{u}
-  /// @param vecQ State white gaussian noise vector \vec{q}
   /// @param dt Time step between state updates (unit: seconds)
   /// @return Predicted/ propagated state space vector
   Vector<DIM_X> f(Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU,
-                  Vector<DIM_X> const& vecQ = Vector<DIM_X>::Zero(),
                   float32_t dt = 1.0F) const
   {
-    return static_cast<Derived const*>(this)->f(vecX, vecU, vecQ, dt);
+    return static_cast<Derived const*>(this)->f(vecX, vecU, dt);
   }
 
   /// @brief Get the process noise covariance Q

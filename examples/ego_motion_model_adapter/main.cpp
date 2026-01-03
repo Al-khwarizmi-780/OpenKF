@@ -31,7 +31,6 @@ class EgoMotionModelAdapter
 {
  public:
   Vector<DIM_X> f(Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU,
-                  Vector<DIM_X> const& /*vecQ = Vector<DIM_X>::Zero()*/,
                   float32_t dt) const
   {
     Vector<3> tmpVecX;  // \vec{x} = [x, y, yaw]^T

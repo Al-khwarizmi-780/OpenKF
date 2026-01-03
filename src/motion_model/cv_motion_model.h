@@ -18,12 +18,9 @@ class CvMotionModel : public MotionModel<CvMotionModel, DIM_X_CV>
   /// @brief Prediction motion model function that propagate the previous state
   /// to next state in time.
   /// @param vecX State space vector \vec{x}
-  /// @param vecQ State white gaussian noise vector \vec{q}
   /// @param dt Time step between state updates (unit: seconds)
   /// @return Predicted/ propagated state space vector
-  Vector<DIM_X_CV> f(Vector<DIM_X_CV> const& vecX,
-                     Vector<DIM_X_CV> const& vecQ = Vector<DIM_X_CV>::Zero(),
-                     float32_t dt = 1.0F) const;
+  Vector<DIM_X_CV> f(Vector<DIM_X_CV> const& vecX, float32_t dt = 1.0F) const;
 
   /// @brief Get the process noise covariance Q
   /// @param sigma Standard deviation of the process noise
