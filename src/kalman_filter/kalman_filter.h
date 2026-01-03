@@ -14,6 +14,7 @@
 
 #include "motion_model/motion_model.h"
 #include "types.h"
+#include <Eigen/Dense>
 
 namespace kf
 {
@@ -41,6 +42,9 @@ class KalmanFilter
   {
     m_vecX = matF * m_vecX;
     m_matP = matF * m_matP * matF.transpose() + matQ;
+
+    // Ensure symmetry of covariance matrix
+    m_matP = (m_matP + m_matP.transpose()) / 2.0F;
   }
 
   ///
@@ -54,13 +58,31 @@ class KalmanFilter
   {
     const Matrix<DIM_X, DIM_X> matI{
         Matrix<DIM_X, DIM_X>::Identity()};  // Identity matrix
-    const Matrix<DIM_Z, DIM_Z> matSk{matH * m_matP * matH.transpose() +
-                                     matR};  // Innovation covariance
+
+    // Innovation covariance
+    Matrix<DIM_Z, DIM_Z> matSk{matH * m_matP * matH.transpose() + matR};
+
+    // Ensure innovation covariance is symmetric
+    matSk = (matSk + matSk.transpose()) / 2.0F;
+
+    Eigen::FullPivLU<Matrix<DIM_Z, DIM_Z>> lu(matSk);
+    if (!lu.isInvertible())
+    {
+      // Add Regularization (Tikhonov/Ridge)
+      // Add a small value to the diagonal to make it invertible.
+      float lambda = 1e-6F;  // Regularization parameter
+      matSk += lambda * Eigen::MatrixXf::Identity(matSk.rows(), matSk.cols());
+    }
+
+    const Matrix<DIM_Z, DIM_Z> matSkInv{matSk.inverse()};
     const Matrix<DIM_X, DIM_Z> matKk{m_matP * matH.transpose() *
-                                     matSk.inverse()};  // Kalman Gain
+                                     matSkInv};  // Kalman Gain
 
     m_vecX = m_vecX + matKk * (vecZ - (matH * m_vecX));
     m_matP = (matI - matKk * matH) * m_matP;
+
+    // Ensure symmetry of covariance matrix
+    m_matP = (m_matP + m_matP.transpose()) / 2.0F;
   }
 
   ///
@@ -76,6 +98,9 @@ class KalmanFilter
   {
     m_vecX = predictionModelFunc(m_vecX);
     m_matP = matJacobF * m_matP * matJacobF.transpose() + matQ;
+
+    // Ensure symmetry of covariance matrix
+    m_matP = (m_matP + m_matP.transpose()) / 2.0F;
   }
 
   ///
@@ -89,6 +114,9 @@ class KalmanFilter
     Matrix<DIM_X, DIM_X> const matQk{motionModel.getProcessNoiseCov(m_vecX)};
     m_vecX = motionModel.f(m_vecX);
     m_matP = matFk * m_matP * matFk.transpose() + matQk;
+
+    // Ensure symmetry of covariance matrix
+    m_matP = (m_matP + m_matP.transpose()) / 2.0F;
   }
 
   ///
@@ -106,6 +134,9 @@ class KalmanFilter
         motionModel.getProcessNoiseCov(m_vecX, vecU)};
     m_vecX = motionModel.f(m_vecX, vecU);
     m_matP = matFk * m_matP * matFk.transpose() + matQk;
+
+    // Ensure symmetry of covariance matrix
+    m_matP = (m_matP + m_matP.transpose()) / 2.0F;
   }
 
   ///
@@ -122,13 +153,31 @@ class KalmanFilter
   {
     const Matrix<DIM_X, DIM_X> matI{
         Matrix<DIM_X, DIM_X>::Identity()};  // Identity matrix
-    const Matrix<DIM_Z, DIM_Z> matSk{matJcobH * m_matP * matJcobH.transpose() +
-                                     matR};  // Innovation covariance
+
+    // Innovation covariance
+    Matrix<DIM_Z, DIM_Z> matSk{matJcobH * m_matP * matJcobH.transpose() + matR};
+
+    // Ensure matSk is symmetric
+    matSk = (matSk + matSk.transpose()) / 2.0F;
+
+    Eigen::FullPivLU<Matrix<DIM_Z, DIM_Z>> lu(matSk);
+    if (!lu.isInvertible())
+    {
+      // Add Regularization (Tikhonov/Ridge)
+      // Add a small value to the diagonal to make it invertible.
+      float lambda = 1e-6F;  // Regularization parameter
+      matSk += lambda * Eigen::MatrixXf::Identity(matSk.rows(), matSk.cols());
+    }
+
+    const Matrix<DIM_Z, DIM_Z> matSkInv{matSk.inverse()};
     const Matrix<DIM_X, DIM_Z> matKk{m_matP * matJcobH.transpose() *
-                                     matSk.inverse()};  // Kalman Gain
+                                     matSkInv};  // Kalman Gain
 
     m_vecX = m_vecX + matKk * (vecZ - measurementModelFunc(m_vecX));
     m_matP = (matI - matKk * matJcobH) * m_matP;
+
+    // Ensure symmetry of covariance matrix
+    m_matP = (m_matP + m_matP.transpose()) / 2.0F;
   }
 
  protected:
