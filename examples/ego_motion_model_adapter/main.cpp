@@ -31,7 +31,8 @@ class EgoMotionModelAdapter
 {
  public:
   Vector<DIM_X> f(Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU,
-                  Vector<DIM_X> const& /*vecQ = Vector<DIM_X>::Zero()*/) const
+                  Vector<DIM_X> const& /*vecQ = Vector<DIM_X>::Zero()*/,
+                  float32_t dt) const
   {
     Vector<3> tmpVecX;  // \vec{x} = [x, y, yaw]^T
     tmpVecX << vecX[0], vecX[1], vecX[4];
@@ -51,7 +52,8 @@ class EgoMotionModelAdapter
   }
 
   Matrix<DIM_X, DIM_X> getProcessNoiseCov(Vector<DIM_X> const& vecX,
-                                          Vector<DIM_U> const& vecU) const
+                                          Vector<DIM_U> const& vecU,
+                                          float32_t dt) const
   {
     // input idx -> output index mapping
     // 0 -> 0
@@ -91,7 +93,8 @@ class EgoMotionModelAdapter
   }
 
   Matrix<DIM_X, DIM_X> getInputNoiseCov(Vector<DIM_X> const& vecX,
-                                        Vector<DIM_U> const& vecU) const
+                                        Vector<DIM_U> const& vecU,
+                                        float32_t dt) const
   {
     Vector<3> tmpVecX;
     tmpVecX << vecX[0], vecX[1], vecX[4];
@@ -118,7 +121,8 @@ class EgoMotionModelAdapter
   }
 
   Matrix<DIM_X, DIM_X> getJacobianFk(Vector<DIM_X> const& vecX,
-                                     Vector<DIM_U> const& vecU) const
+                                     Vector<DIM_U> const& vecU,
+                                     float32_t dt) const
   {
     Vector<3> tmpVecX;
     tmpVecX << vecX[0], vecX[1], vecX[4];
@@ -145,7 +149,8 @@ class EgoMotionModelAdapter
   }
 
   Matrix<DIM_X, DIM_U> getJacobianBk(Vector<DIM_X> const& vecX,
-                                     Vector<DIM_U> const& vecU) const
+                                     Vector<DIM_U> const& vecU,
+                                     float32_t dt) const
   {
     Vector<3> tmpVecX;
     tmpVecX << vecX[0], vecX[1], vecX[4];
