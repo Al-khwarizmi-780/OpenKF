@@ -47,6 +47,7 @@ endif(MSVC)
 
 target_include_directories(${LIBRARY_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/third_party/Eigen3/Eigen>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>
 )
 
@@ -90,3 +91,5 @@ install(
     EXPORT ${TARGETS_EXPORT_NAME} 
     DESTINATION ${CONFIG_INSTALL_DIR}
 )
+
+add_subdirectory(third_party/googletest)

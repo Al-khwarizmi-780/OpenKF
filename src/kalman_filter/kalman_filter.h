@@ -82,7 +82,8 @@ class KalmanFilter
   /// @brief predict state with a linear process model.
   /// @param motionModel prediction motion model function
   ///
-  void predictEkf(motionmodel::MotionModel<DIM_X> const& motionModel)
+  template <class Derived>
+  void predictEkf(motionmodel::MotionModel<Derived, DIM_X> const& motionModel)
   {
     Matrix<DIM_X, DIM_X> const matFk{motionModel.getJacobianFk(m_vecX)};
     Matrix<DIM_X, DIM_X> const matQk{motionModel.getProcessNoiseCov(m_vecX)};
@@ -95,10 +96,10 @@ class KalmanFilter
   /// @param motionModel prediction motion model function
   /// @param vecU input vector
   ///
-  template <int32_t DIM_U>
-  void predictEkf(
-      motionmodel::MotionModelExtInput<DIM_X, DIM_U> const& motionModel,
-      Vector<DIM_U> const& vecU)
+  template <class Derived, int32_t DIM_U>
+  void predictEkf(motionmodel::MotionModelExtInput<Derived, DIM_X, DIM_U> const&
+                      motionModel,
+                  Vector<DIM_U> const& vecU)
   {
     Matrix<DIM_X, DIM_X> const matFk{motionModel.getJacobianFk(m_vecX, vecU)};
     Matrix<DIM_X, DIM_X> const matQk{

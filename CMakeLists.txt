@@ -1,15 +1,6 @@
 cmake_minimum_required(VERSION 3.4)
 
 # ============================================================================================
-# VCPKG Toolchain
-# ============================================================================================
-if(WIN32)
-    # use vcpkg as packages manager in windows platform
-    # environment variable needs to be added for the path to vcpkg installation "VCPKG_ROOT"
-    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
-endif(WIN32)
-
-# ============================================================================================
 # ============================================================================================
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -46,7 +37,6 @@ find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 include(CTest)
 
-add_subdirectory(third_party/googletest)
 add_subdirectory(src)
 add_subdirectory(examples)
 add_subdirectory(tests)

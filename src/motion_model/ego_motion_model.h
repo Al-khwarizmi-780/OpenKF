@@ -20,7 +20,7 @@ static constexpr int32_t DIM_U{2};
 /// Motion model for ego vehicle which is used for dead reckoning purposes
 /// by utilizing odometry external inputs vehicle displacement and change
 /// in heading angle and incrementing them to obtain the new state.
-class EgoMotionModel : public MotionModelExtInput<DIM_X, DIM_U>
+class EgoMotionModel : public MotionModelExtInput<EgoMotionModel, DIM_X, DIM_U>
 {
  public:
   EgoMotionModel()
@@ -35,37 +35,36 @@ class EgoMotionModel : public MotionModelExtInput<DIM_X, DIM_U>
   /// @param vecU Input space vector \vec{u}
   /// @param vecQ State white gaussian noise vector \vec{q}
   /// @return Predicted/ propagated state space vector
-  virtual Vector<DIM_X> f(
-      Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU,
-      Vector<DIM_X> const& vecQ = Vector<DIM_X>::Zero()) const override;
+  Vector<DIM_X> f(Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU,
+                  Vector<DIM_X> const& vecQ = Vector<DIM_X>::Zero()) const;
 
   /// @brief Get the process noise covariance Q
   /// @param vecX State space vector \vec{x}
   /// @param vecU Input space vector \vec{u}
   /// @return The process noise covariance Q
-  virtual Matrix<DIM_X, DIM_X> getProcessNoiseCov(
-      Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU) const override;
+  Matrix<DIM_X, DIM_X> getProcessNoiseCov(Vector<DIM_X> const& vecX,
+                                          Vector<DIM_U> const& vecU) const;
 
   /// @brief Get the input noise covariance U
   /// @param vecX State space vector \vec{x}
   /// @param vecU Input space vector \vec{u}
   /// @return The input noise covariance U
-  virtual Matrix<DIM_X, DIM_X> getInputNoiseCov(
-      Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU) const override;
+  Matrix<DIM_X, DIM_X> getInputNoiseCov(Vector<DIM_X> const& vecX,
+                                        Vector<DIM_U> const& vecU) const;
 
   /// @brief Method that calculates the jacobians of the state transition model.
   /// @param vecX State Space vector \vec{x}
   /// @param vecU Input Space vector \vec{u}
   /// @return The jacobians of the state transition model.
-  virtual Matrix<DIM_X, DIM_X> getJacobianFk(
-      Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU) const override;
+  Matrix<DIM_X, DIM_X> getJacobianFk(Vector<DIM_X> const& vecX,
+                                     Vector<DIM_U> const& vecU) const;
 
   /// @brief Method that calculates the jacobians of the input transition model.
   /// @param vecX State Space vector \vec{x}
   /// @param vecU Input Space vector \vec{u}
   /// @return The jacobians of the input transition model.
-  virtual Matrix<DIM_X, DIM_U> getJacobianBk(
-      Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU) const override;
+  Matrix<DIM_X, DIM_U> getJacobianBk(Vector<DIM_X> const& vecX,
+                                     Vector<DIM_U> const& vecU) const;
 
   /// @brief Setter for noise variance of pose-x state.
   /// @param val variance value

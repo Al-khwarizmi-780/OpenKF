@@ -3,6 +3,9 @@
 #include "types.h"
 #include <gtest/gtest.h>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 using namespace kf;
 
 class EgoMotionModelTest : public testing::Test
@@ -107,7 +110,7 @@ TEST_F(EgoMotionModelTest, test_egoMotionModel_ForwardReverseMoves)
   EXPECT_NEAR(vecXn[2], vecX[2], 0.0001F);
 
   // moving forward + oriented 90 degrees
-  vecX << 0.0F, 0.0F, M_PI / 2.0F;
+  vecX << 0.0F, 0.0F, static_cast<float>(M_PI) / 2.0F;
   vecU << 0.5F, 0.0F;
 
   vecXn = egoMotionModel.f(vecX, vecU);
@@ -117,7 +120,7 @@ TEST_F(EgoMotionModelTest, test_egoMotionModel_ForwardReverseMoves)
   EXPECT_NEAR(vecXn[2], vecX[2], 0.0001F);
 
   // moving backward + oriented 90 degrees
-  vecX << 0.0F, 0.0F, M_PI / 2.0F;
+  vecX << 0.0F, 0.0F, static_cast<float>(M_PI) / 2.0F;
   vecU << -0.5F, 0.0F;
 
   vecXn = egoMotionModel.f(vecX, vecU);
@@ -127,7 +130,7 @@ TEST_F(EgoMotionModelTest, test_egoMotionModel_ForwardReverseMoves)
   EXPECT_NEAR(vecXn[2], vecX[2], 0.0001F);
 
   // moving forward + oriented -90 degrees
-  vecX << 0.0F, 0.0F, -M_PI / 2.0F;
+  vecX << 0.0F, 0.0F, -static_cast<float>(M_PI) / 2.0F;
   vecU << 0.5F, 0.0F;
 
   vecXn = egoMotionModel.f(vecX, vecU);
@@ -137,7 +140,7 @@ TEST_F(EgoMotionModelTest, test_egoMotionModel_ForwardReverseMoves)
   EXPECT_NEAR(vecXn[2], vecX[2], 0.0001F);
 
   // moving backward + oriented -90 degrees
-  vecX << 0.0F, 0.0F, -M_PI / 2.0F;
+  vecX << 0.0F, 0.0F, -static_cast<float>(M_PI) / 2.0F;
   vecU << -0.5F, 0.0F;
 
   vecXn = egoMotionModel.f(vecX, vecU);
@@ -147,7 +150,7 @@ TEST_F(EgoMotionModelTest, test_egoMotionModel_ForwardReverseMoves)
   EXPECT_NEAR(vecXn[2], vecX[2], 0.0001F);
 
   // moving forward + oriented 45 degrees
-  vecX << 0.0F, 0.0F, M_PI / 4.0F;
+  vecX << 0.0F, 0.0F, static_cast<float>(M_PI) / 4.0F;
   vecU << 0.5F, 0.0F;
 
   vecXn = egoMotionModel.f(vecX, vecU);
@@ -161,7 +164,7 @@ TEST_F(EgoMotionModelTest, test_egoMotionModel_ForwardReverseMoves)
   EXPECT_NEAR(vecXn[2], vecX[2] + vecU[1], 0.0001F);
 
   // moving forward + oriented 45 degrees
-  vecX << 0.0F, 0.0F, -M_PI / 4.0F;
+  vecX << 0.0F, 0.0F, -static_cast<float>(M_PI) / 4.0F;
   vecU << 0.5F, 0.0F;
 
   vecXn = egoMotionModel.f(vecX, vecU);
@@ -205,7 +208,7 @@ TEST_F(EgoMotionModelTest, test_egoMotionModel_EKF_ForwardReverseMoves)
   EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2], 0.0001F);
 
   // moving forward + oriented 90 degrees
-  vecX << 0.0F, 0.0F, M_PI / 2.0F;
+  vecX << 0.0F, 0.0F, static_cast<float>(M_PI) / 2.0F;
   vecU << 0.5F, 0.0F;
 
   kalmanFilter.vecX() = vecX;
@@ -216,7 +219,7 @@ TEST_F(EgoMotionModelTest, test_egoMotionModel_EKF_ForwardReverseMoves)
   EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2], 0.0001F);
 
   // moving backward + oriented 90 degrees
-  vecX << 0.0F, 0.0F, M_PI / 2.0F;
+  vecX << 0.0F, 0.0F, static_cast<float>(M_PI) / 2.0F;
   vecU << -0.5F, 0.0F;
 
   kalmanFilter.vecX() = vecX;
@@ -227,7 +230,7 @@ TEST_F(EgoMotionModelTest, test_egoMotionModel_EKF_ForwardReverseMoves)
   EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2], 0.0001F);
 
   // moving forward + oriented -90 degrees
-  vecX << 0.0F, 0.0F, -M_PI / 2.0F;
+  vecX << 0.0F, 0.0F, -static_cast<float>(M_PI) / 2.0F;
   vecU << 0.5F, 0.0F;
 
   kalmanFilter.vecX() = vecX;
@@ -238,7 +241,7 @@ TEST_F(EgoMotionModelTest, test_egoMotionModel_EKF_ForwardReverseMoves)
   EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2], 0.0001F);
 
   // moving backward + oriented -90 degrees
-  vecX << 0.0F, 0.0F, -M_PI / 2.0F;
+  vecX << 0.0F, 0.0F, -static_cast<float>(M_PI) / 2.0F;
   vecU << -0.5F, 0.0F;
 
   kalmanFilter.vecX() = vecX;
@@ -249,7 +252,7 @@ TEST_F(EgoMotionModelTest, test_egoMotionModel_EKF_ForwardReverseMoves)
   EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2], 0.0001F);
 
   // moving forward + oriented 45 degrees
-  vecX << 0.0F, 0.0F, M_PI / 4.0F;
+  vecX << 0.0F, 0.0F, static_cast<float>(M_PI) / 4.0F;
   vecU << 0.5F, 0.0F;
 
   kalmanFilter.vecX() = vecX;
@@ -264,7 +267,7 @@ TEST_F(EgoMotionModelTest, test_egoMotionModel_EKF_ForwardReverseMoves)
   EXPECT_NEAR(kalmanFilter.vecX()[2], vecX[2] + vecU[1], 0.0001F);
 
   // moving forward + oriented 45 degrees
-  vecX << 0.0F, 0.0F, -M_PI / 4.0F;
+  vecX << 0.0F, 0.0F, -static_cast<float>(M_PI) / 4.0F;
   vecU << 0.5F, 0.0F;
 
   kalmanFilter.vecX() = vecX;

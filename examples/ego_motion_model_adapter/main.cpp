@@ -26,12 +26,12 @@ using namespace kf;
 /// 3-dimension state egomotion model to a higher or lower dimension state
 /// vector (e.g. 5-dimension state vector and 3-dimension input vector).
 class EgoMotionModelAdapter
-    : public motionmodel::MotionModelExtInput<DIM_X, DIM_U>
+    : public motionmodel::MotionModelExtInput<EgoMotionModelAdapter, DIM_X,
+                                              DIM_U>
 {
  public:
-  virtual Vector<DIM_X> f(
-      Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU,
-      Vector<DIM_X> const& /*vecQ = Vector<DIM_X>::Zero()*/) const override
+  Vector<DIM_X> f(Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU,
+                  Vector<DIM_X> const& /*vecQ = Vector<DIM_X>::Zero()*/) const
   {
     Vector<3> tmpVecX;  // \vec{x} = [x, y, yaw]^T
     tmpVecX << vecX[0], vecX[1], vecX[4];
@@ -50,8 +50,8 @@ class EgoMotionModelAdapter
     return vecXout;
   }
 
-  virtual Matrix<DIM_X, DIM_X> getProcessNoiseCov(
-      Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU) const override
+  Matrix<DIM_X, DIM_X> getProcessNoiseCov(Vector<DIM_X> const& vecX,
+                                          Vector<DIM_U> const& vecU) const
   {
     // input idx -> output index mapping
     // 0 -> 0
@@ -90,8 +90,8 @@ class EgoMotionModelAdapter
     return matQout;
   }
 
-  virtual Matrix<DIM_X, DIM_X> getInputNoiseCov(
-      Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU) const override
+  Matrix<DIM_X, DIM_X> getInputNoiseCov(Vector<DIM_X> const& vecX,
+                                        Vector<DIM_U> const& vecU) const
   {
     Vector<3> tmpVecX;
     tmpVecX << vecX[0], vecX[1], vecX[4];
@@ -117,8 +117,8 @@ class EgoMotionModelAdapter
     return matUout;
   }
 
-  virtual Matrix<DIM_X, DIM_X> getJacobianFk(
-      Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU) const override
+  Matrix<DIM_X, DIM_X> getJacobianFk(Vector<DIM_X> const& vecX,
+                                     Vector<DIM_U> const& vecU) const
   {
     Vector<3> tmpVecX;
     tmpVecX << vecX[0], vecX[1], vecX[4];
@@ -144,8 +144,8 @@ class EgoMotionModelAdapter
     return matFkout;
   }
 
-  virtual Matrix<DIM_X, DIM_U> getJacobianBk(
-      Vector<DIM_X> const& vecX, Vector<DIM_U> const& vecU) const override
+  Matrix<DIM_X, DIM_U> getJacobianBk(Vector<DIM_X> const& vecX,
+                                     Vector<DIM_U> const& vecU) const
   {
     Vector<3> tmpVecX;
     tmpVecX << vecX[0], vecX[1], vecX[4];
