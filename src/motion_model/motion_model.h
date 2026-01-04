@@ -25,14 +25,13 @@ class MotionModel
   }
 
   /// @brief Get the process noise covariance Q
-  /// @param sigma Vector constaining standard deviations of the process noise
+  /// @param vecX State space vector \vec{x}
   /// @param dt Time step between state updates (unit: seconds)
   /// @return The process noise covariance Q
-  template <int32_t DIM_SIGMA>
-  Matrix<DIM_X, DIM_X> getProcessNoiseCov(Vector<DIM_SIGMA> const& sigma,
+  Matrix<DIM_X, DIM_X> getProcessNoiseCov(Vector<DIM_X> const& vecX,
                                           float32_t dt = 1.0F) const
   {
-    return static_cast<Derived const*>(this)->getProcessNoiseCov(sigma, dt);
+    return static_cast<Derived const*>(this)->getProcessNoiseCov(vecX, dt);
   }
 
   /// @brief Method that calculates the jacobians of the state transition model.

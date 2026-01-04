@@ -9,6 +9,9 @@ namespace motionmodel
 /// \vec{x}=[pos_x, pos_y, vel_x, vel_y]^T
 static constexpr int32_t DIM_X_CV{4};
 
+/// @brief Process noise dimension for constant velocity motion model
+static constexpr int32_t DIM_Q_CV{1};
+
 class CvMotionModel : public MotionModel<CvMotionModel, DIM_X_CV>
 {
  public:
@@ -23,11 +26,10 @@ class CvMotionModel : public MotionModel<CvMotionModel, DIM_X_CV>
   Vector<DIM_X_CV> f(Vector<DIM_X_CV> const& vecX, float32_t dt = 1.0F) const;
 
   /// @brief Get the process noise covariance Q
-  /// @param sigma Standard deviation of the process noise v=[sigma]
+  /// @param vecX State space vector \vec{x}
   /// @param dt Time step between state updates (unit: seconds)
   /// @return The process noise covariance Q
-  template <int32_t DIM_SIGMA>
-  Matrix<DIM_X_CV, DIM_X_CV> getProcessNoiseCov(Vector<DIM_SIGMA> const& sigma,
+  Matrix<DIM_X_CV, DIM_X_CV> getProcessNoiseCov(Vector<DIM_X_CV> const& vecX,
                                                 float32_t dt = 1.0F) const;
 
   /// @brief Method that calculates the jacobians of the state transition model.
@@ -41,11 +43,20 @@ class CvMotionModel : public MotionModel<CvMotionModel, DIM_X_CV>
   /// @return State dimension
   static constexpr int32_t getStateDim() { return DIM_X_CV; }
 
+  /// @brief Set process noise vector
+  /// @param processNoiseVec Process noise vector
+  void setProcessNoiseVector(Vector<DIM_Q_CV> const& processNoiseVec)
+  {
+    m_processNoiseVec = processNoiseVec;
+  }
+
  private:
   static constexpr int32_t IDX_PX{0};  //< Index for position x
   static constexpr int32_t IDX_PY{1};  //< Index for position y
   static constexpr int32_t IDX_VX{2};  //< Index for velocity x
   static constexpr int32_t IDX_VY{3};  //< Index for velocity y
+
+  Vector<DIM_Q_CV> m_processNoiseVec;  //< Process noise vector
 };
 
 }  // namespace motionmodel
