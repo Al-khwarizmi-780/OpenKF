@@ -15,51 +15,45 @@ class CvMotionModelTest : public testing::Test
   {
     m_cvMotionModel.setProcessNoiseVector(
         Vector<motionmodel::DIM_Q_CV>::Constant(0.5F));
+
+    m_initialState << 10.0, 20.0, 5.0, -2.0;
   }
   virtual void TearDown() override {}
 
   static constexpr int32_t DIM_X{4};
-  static constexpr int32_t DIM_Z{2};
 
+  Vector<DIM_X> m_initialState;
   motionmodel::CvMotionModel m_cvMotionModel;
 };
 
 TEST_F(CvMotionModelTest, test_PredictZeroDeltaTime)
 {
-  Vector<DIM_X> initial_state;
-  initial_state << 10.0, 20.0, 5.0, -2.0;
+  Vector<DIM_X> predictedState = m_cvMotionModel.f(m_initialState, 0.0);
 
-  Vector<DIM_X> predicted_state = m_cvMotionModel.f(initial_state, 0.0);
-
-  EXPECT_DOUBLE_EQ(predicted_state(0), 10.0);  // x unchanged
-  EXPECT_DOUBLE_EQ(predicted_state(1), 20.0);  // y unchanged
-  EXPECT_DOUBLE_EQ(predicted_state(2), 5.0);   // vx unchanged
-  EXPECT_DOUBLE_EQ(predicted_state(3), -2.0);  // vy unchanged
+  EXPECT_DOUBLE_EQ(predictedState(0), 10.0);  // x unchanged
+  EXPECT_DOUBLE_EQ(predictedState(1), 20.0);  // y unchanged
+  EXPECT_DOUBLE_EQ(predictedState(2), 5.0);   // vx unchanged
+  EXPECT_DOUBLE_EQ(predictedState(3), -2.0);  // vy unchanged
 }
 
 TEST_F(CvMotionModelTest, test_PredictValidDeltaTime)
 {
-  Vector<DIM_X> vecX;
-  vecX << 1.0F, 2.0F, 0.5F, -0.5F;
-
   float32_t const dt{0.1F};
 
-  Vector<DIM_X> const vecXPred{m_cvMotionModel.f(vecX, dt)};
+  Vector<DIM_X> const vecXPred{m_cvMotionModel.f(m_initialState, dt)};
 
-  EXPECT_FLOAT_EQ(vecXPred[0], 1.0F + 0.5F * dt);
-  EXPECT_FLOAT_EQ(vecXPred[1], 2.0F - 0.5F * dt);
-  EXPECT_FLOAT_EQ(vecXPred[2], 0.5F);
-  EXPECT_FLOAT_EQ(vecXPred[3], -0.5F);
+  EXPECT_FLOAT_EQ(vecXPred[0], m_initialState[0] + m_initialState[2] * dt);
+  EXPECT_FLOAT_EQ(vecXPred[1], m_initialState[1] + m_initialState[3] * dt);
+  EXPECT_FLOAT_EQ(vecXPred[2], m_initialState[2]);
+  EXPECT_FLOAT_EQ(vecXPred[3], m_initialState[3]);
 }
 
 TEST_F(CvMotionModelTest, test_GetProcessNoiseCov)
 {
-  Vector<DIM_X> vecX;
-  vecX << 1.0F, 2.0F, 0.5F, -0.5F;
-
   float32_t const dt{0.1F};
 
-  Matrix<DIM_X, DIM_X> const matQ{m_cvMotionModel.getProcessNoiseCov(vecX, dt)};
+  Matrix<DIM_X, DIM_X> const matQ{
+      m_cvMotionModel.getProcessNoiseCov(m_initialState, dt)};
 
   const float32_t sigma2{0.5F * 0.5F};
   const float32_t dt2{dt * dt};
@@ -89,12 +83,8 @@ TEST_F(CvMotionModelTest, test_GetProcessNoiseCov)
 
 TEST_F(CvMotionModelTest, test_StateTransitionMatrix)
 {
-  // Initialize with known state
-  Vector<DIM_X> init_state;
-  init_state << 10.0, 20.0, 5.0, -2.0;  // x, y, vx, vy
-
   float32_t dt{1.5F};
-  Matrix<DIM_X, DIM_X> F{m_cvMotionModel.getJacobianFk(init_state, dt)};
+  Matrix<DIM_X, DIM_X> F{m_cvMotionModel.getJacobianFk(m_initialState, dt)};
 
   // Expected F matrix for CV model:
   // [1 0 dt 0]
@@ -102,14 +92,14 @@ TEST_F(CvMotionModelTest, test_StateTransitionMatrix)
   // [0 0 1 0]
   // [0 0 0 1]
 
-  EXPECT_DOUBLE_EQ(F(0, 0), 1.0);
-  EXPECT_DOUBLE_EQ(F(0, 1), 0.0);
+  EXPECT_DOUBLE_EQ(F(0, 0), 1.0F);
+  EXPECT_DOUBLE_EQ(F(0, 1), 0.0F);
   EXPECT_DOUBLE_EQ(F(0, 2), dt);
-  EXPECT_DOUBLE_EQ(F(0, 3), 0.0);
+  EXPECT_DOUBLE_EQ(F(0, 3), 0.0F);
 
-  EXPECT_DOUBLE_EQ(F(1, 0), 0.0);
-  EXPECT_DOUBLE_EQ(F(1, 1), 1.0);
-  EXPECT_DOUBLE_EQ(F(1, 2), 0.0);
+  EXPECT_DOUBLE_EQ(F(1, 0), 0.0F);
+  EXPECT_DOUBLE_EQ(F(1, 1), 1.0F);
+  EXPECT_DOUBLE_EQ(F(1, 2), 0.0F);
   EXPECT_DOUBLE_EQ(F(1, 3), dt);
 
   // Check that it's a 4x4 matrix
@@ -119,18 +109,14 @@ TEST_F(CvMotionModelTest, test_StateTransitionMatrix)
 
 TEST_F(CvMotionModelTest, test_PredictConsistency)
 {
-  // Initialize with known state
-  Vector<DIM_X> init_state;
-  init_state << 10.0, 20.0, 5.0, -2.0;  // x, y, vx, vy
-
   float32_t dt{3.0F};
 
   // Direct prediction
-  Vector<DIM_X> predicted_state{m_cvMotionModel.f(init_state, dt)};
+  Vector<DIM_X> predicted_state{m_cvMotionModel.f(m_initialState, dt)};
 
   // Prediction using state transition matrix
-  Matrix<DIM_X, DIM_X> F{m_cvMotionModel.getJacobianFk(init_state, dt)};
-  Vector<DIM_X> matrix_prediction{F * init_state};
+  Matrix<DIM_X, DIM_X> F{m_cvMotionModel.getJacobianFk(m_initialState, dt)};
+  Vector<DIM_X> matrix_prediction{F * m_initialState};
 
   // Both should give same result
   EXPECT_TRUE(predicted_state.isApprox(matrix_prediction));

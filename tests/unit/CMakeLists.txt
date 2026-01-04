@@ -17,6 +17,7 @@ add_executable(${TEST_APP_NAME}
     kalman_filter/square_root_ukf_test.cpp
     motion_model/ego_motion_model_test.cpp
     motion_model/cv_motion_model_test.cpp
+    motion_model/ca_motion_model_test.cpp
 )
 
 target_link_libraries(${TEST_APP_NAME} PRIVATE
