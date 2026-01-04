@@ -9,9 +9,9 @@ Vector<DIM_X_CT> CtMotionModel::f(Vector<DIM_X_CT> const& vecX,
                                   float32_t dt) const
 {
   // State transition model for constant turn rate (CT) motion model
-  // [ pos_x ]   [ pos_x + vel_x * T * cos(theta) ]
-  // [ pos_y ] = [ pos_y + vel_x * T * sin(theta) ]
-  // [   vel ]   [ vel_x ]
+  // [ pos_x ]   [ pos_x + vel * T * cos(theta) ]
+  // [ pos_y ] = [ pos_y + vel * T * sin(theta) ]
+  // [   vel ]   [ vel ]
   // [ theta ]   [ theta + omega * T ]
   // [ omega ]   [ omega ]
 
@@ -27,15 +27,55 @@ Vector<DIM_X_CT> CtMotionModel::f(Vector<DIM_X_CT> const& vecX,
   return vecXPred;
 }
 
-Matrix<DIM_X_CT, DIM_X_CT> CtMotionModel::getProcessNoiseCov(float32_t sigma,
-                                                             float32_t dt) const
+template <>
+Matrix<DIM_X_CT, DIM_X_CT> CtMotionModel::getProcessNoiseCov<2>(
+    Vector<2> const& sigma, float32_t dt) const
 {
   Matrix<DIM_X_CT, DIM_X_CT> matQ{Matrix<DIM_X_CT, DIM_X_CT>::Zero()};
 
-  float32_t const sigma2{sigma * sigma};
+  float32_t const sigma2{sigma[0] * sigma[0]};
 
   matQ(IDX_V, IDX_V) = sigma2;
   matQ(IDX_OMEGA, IDX_OMEGA) = sigma2;
+
+  float32_t const sigma_accel2{sigma[0] * sigma[0]};
+  float32_t const sigma_alpha2{sigma[1] * sigma[1]};
+
+  float32_t const dt2{dt * dt};
+  float32_t const dt3{dt2 * dt};
+
+  float32_t const dt2_div2{dt2 / 2.0F};
+  float32_t const dt3_div3{dt3 / 3.0F};
+
+  matQ(IDX_PX, IDX_PX) = sigma_accel2 * dt3_div3;
+  matQ(IDX_PX, IDX_PY) = 0.0F;
+  matQ(IDX_PX, IDX_V) = sigma_accel2 * dt2_div2 /* *cosf(vecX[IDX_THETA]) */;
+  matQ(IDX_PX, IDX_THETA) = 0.0F;
+  matQ(IDX_PX, IDX_OMEGA) = 0.0F;
+
+  matQ(IDX_PY, IDX_PX) = 0.0F;
+  matQ(IDX_PY, IDX_PY) = sigma_accel2 * dt3_div3;
+  matQ(IDX_PY, IDX_V) = sigma_accel2 * dt2_div2 /* *sinf(vecX[IDX_THETA]) */;
+  matQ(IDX_PY, IDX_THETA) = 0.0F;
+  matQ(IDX_PY, IDX_OMEGA) = 0.0F;
+
+  matQ(IDX_V, IDX_PX) = sigma_accel2 * dt2_div2 /* *cosf(vecX[IDX_THETA]) */;
+  matQ(IDX_V, IDX_PY) = sigma_accel2 * dt2_div2 /* *sinf(vecX[IDX_THETA]) */;
+  matQ(IDX_V, IDX_V) = sigma_accel2 * dt;
+  matQ(IDX_V, IDX_THETA) = 0.0F;
+  matQ(IDX_V, IDX_OMEGA) = 0.0F;
+
+  matQ(IDX_THETA, IDX_PX) = 0.0F;
+  matQ(IDX_THETA, IDX_PY) = 0.0F;
+  matQ(IDX_THETA, IDX_V) = 0.0F;
+  matQ(IDX_THETA, IDX_THETA) = sigma_alpha2 * dt3_div3;
+  matQ(IDX_THETA, IDX_OMEGA) = sigma_alpha2 * dt2_div2;
+
+  matQ(IDX_OMEGA, IDX_PX) = 0.0F;
+  matQ(IDX_OMEGA, IDX_PY) = 0.0F;
+  matQ(IDX_OMEGA, IDX_V) = 0.0F;
+  matQ(IDX_OMEGA, IDX_THETA) = sigma_alpha2 * dt2_div2;
+  matQ(IDX_OMEGA, IDX_OMEGA) = sigma_alpha2 * dt;
 
   return matQ;
 }

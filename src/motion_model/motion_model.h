@@ -25,10 +25,11 @@ class MotionModel
   }
 
   /// @brief Get the process noise covariance Q
-  /// @param sigma Standard deviation of the process noise
+  /// @param sigma Vector constaining standard deviations of the process noise
   /// @param dt Time step between state updates (unit: seconds)
   /// @return The process noise covariance Q
-  Matrix<DIM_X, DIM_X> getProcessNoiseCov(float32_t sigma,
+  template <int32_t DIM_SIGMA>
+  Matrix<DIM_X, DIM_X> getProcessNoiseCov(Vector<DIM_SIGMA> const& sigma,
                                           float32_t dt = 1.0F) const
   {
     return static_cast<Derived const*>(this)->getProcessNoiseCov(sigma, dt);

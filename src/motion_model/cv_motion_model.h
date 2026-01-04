@@ -23,10 +23,11 @@ class CvMotionModel : public MotionModel<CvMotionModel, DIM_X_CV>
   Vector<DIM_X_CV> f(Vector<DIM_X_CV> const& vecX, float32_t dt = 1.0F) const;
 
   /// @brief Get the process noise covariance Q
-  /// @param sigma Standard deviation of the process noise
+  /// @param sigma Standard deviation of the process noise v=[sigma]
   /// @param dt Time step between state updates (unit: seconds)
   /// @return The process noise covariance Q
-  Matrix<DIM_X_CV, DIM_X_CV> getProcessNoiseCov(float32_t sigma,
+  template <int32_t DIM_SIGMA>
+  Matrix<DIM_X_CV, DIM_X_CV> getProcessNoiseCov(Vector<DIM_SIGMA> const& sigma,
                                                 float32_t dt = 1.0F) const;
 
   /// @brief Method that calculates the jacobians of the state transition model.

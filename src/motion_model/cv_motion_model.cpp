@@ -24,8 +24,9 @@ Vector<DIM_X_CV> CvMotionModel::f(Vector<DIM_X_CV> const& vecX,
   return vecXPred;
 }
 
-Matrix<DIM_X_CV, DIM_X_CV> CvMotionModel::getProcessNoiseCov(float32_t sigma,
-                                                             float32_t dt) const
+template <>
+Matrix<DIM_X_CV, DIM_X_CV> CvMotionModel::getProcessNoiseCov<1>(
+    Vector<1> const& sigma, float32_t dt) const
 {
   // Q = sigma^2*[T^4/4   0       T^3/2   0;
   //              0       T^4/4   0       T^3/2;
@@ -35,7 +36,7 @@ Matrix<DIM_X_CV, DIM_X_CV> CvMotionModel::getProcessNoiseCov(float32_t sigma,
 
   Matrix<DIM_X_CV, DIM_X_CV> matQ;
 
-  const float32_t sigma2 = sigma * sigma;
+  const float32_t sigma2 = sigma[0] * sigma[0];
   const float32_t dt2 = dt * dt;
   const float32_t dt3 = dt2 * dt;
   const float32_t dt4 = dt2 * dt2;
