@@ -20,7 +20,7 @@ class CaMotionModelTest : public testing::Test
   }
   virtual void TearDown() override {}
 
-  static constexpr int32_t DIM_X{6};
+  static constexpr int32_t DIM_X{motionmodel::DIM_X_CA};
 
   Vector<DIM_X> m_initState;
   motionmodel::CaMotionModel m_caMotionModel;

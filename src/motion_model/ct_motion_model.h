@@ -50,13 +50,13 @@ class CtMotionModel : public MotionModel<CtMotionModel, DIM_X_CT>
     m_processNoiseVec = processNoiseVec;
   }
 
- private:
   static constexpr int32_t IDX_PX{0};     //< Index for position x
   static constexpr int32_t IDX_PY{1};     //< Index for position y
   static constexpr int32_t IDX_V{2};      //< Index for velocity
   static constexpr int32_t IDX_THETA{3};  //< Index for heading angle
   static constexpr int32_t IDX_OMEGA{4};  //< Index for yaw rate
 
+ private:
   Vector<DIM_Q_CT> m_processNoiseVec;  //< Process noise vector
 };
 

@@ -50,7 +50,6 @@ class CaMotionModel : public MotionModel<CaMotionModel, DIM_X_CA>
     m_processNoiseVec = processNoiseVec;
   }
 
- private:
   static constexpr int32_t IDX_PX{0};  //< Index for position x
   static constexpr int32_t IDX_PY{1};  //< Index for position y
   static constexpr int32_t IDX_VX{2};  //< Index for velocity x
@@ -58,6 +57,7 @@ class CaMotionModel : public MotionModel<CaMotionModel, DIM_X_CA>
   static constexpr int32_t IDX_AX{4};  //< Index for acceleration x
   static constexpr int32_t IDX_AY{5};  //< Index for acceleration y
 
+ private:
   Vector<DIM_Q_CA> m_processNoiseVec;  //< Process noise vector
 };
 

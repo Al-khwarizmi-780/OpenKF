@@ -20,7 +20,7 @@ class CvMotionModelTest : public testing::Test
   }
   virtual void TearDown() override {}
 
-  static constexpr int32_t DIM_X{4};
+  static constexpr int32_t DIM_X{motionmodel::DIM_X_CV};
 
   Vector<DIM_X> m_initialState;
   motionmodel::CvMotionModel m_cvMotionModel;

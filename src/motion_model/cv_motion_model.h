@@ -50,12 +50,12 @@ class CvMotionModel : public MotionModel<CvMotionModel, DIM_X_CV>
     m_processNoiseVec = processNoiseVec;
   }
 
- private:
   static constexpr int32_t IDX_PX{0};  //< Index for position x
   static constexpr int32_t IDX_PY{1};  //< Index for position y
   static constexpr int32_t IDX_VX{2};  //< Index for velocity x
   static constexpr int32_t IDX_VY{3};  //< Index for velocity y
 
+ private:
   Vector<DIM_Q_CV> m_processNoiseVec;  //< Process noise vector
 };
 
