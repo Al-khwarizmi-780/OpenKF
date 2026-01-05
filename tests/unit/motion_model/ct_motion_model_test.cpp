@@ -26,18 +26,10 @@ class CtMotionModelTest : public testing::Test
   motionmodel::CtMotionModel m_ctMotionModel;
 };
 
-TEST_F(CtMotionModelTest, PredictCircularMotion)
+TEST_F(CtMotionModelTest, test_PredictCircularMotion)
 {
   float32_t dt{1.0F};
   Vector<DIM_X> predicted_state{m_ctMotionModel.f(m_initState, dt)};
-
-  float32_t v{m_initState(2)};
-  float32_t heading{m_initState(3)};
-  float32_t turn_rate{m_initState(4)};
-
-  float32_t new_heading{heading + turn_rate * dt};
-  float32_t delta_x{(v / turn_rate) * (sin(new_heading) - sin(heading))};
-  float32_t delta_y{(v / turn_rate) * (-cos(new_heading) + cos(heading))};
 
   float32_t displacement{m_initState[motionmodel::CtMotionModel::IDX_V] * dt};
 
@@ -61,7 +53,7 @@ TEST_F(CtMotionModelTest, PredictCircularMotion)
   EXPECT_FLOAT_EQ(predicted_state(4), expectedState(4));  // turn rate unchanged
 }
 
-TEST_F(CtMotionModelTest, ZeroTurnRateDegeneratesToCV)
+TEST_F(CtMotionModelTest, test_ZeroTurnRateDegeneratesToCV)
 {
   Vector<DIM_X> state;
   state << 0.0F, 0.0F, 10.0F, static_cast<float32_t>(M_PI) / 4.0F,

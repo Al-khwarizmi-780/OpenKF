@@ -19,6 +19,7 @@ add_executable(${TEST_APP_NAME}
     motion_model/cv_motion_model_test.cpp
     motion_model/ca_motion_model_test.cpp
     motion_model/ct_motion_model_test.cpp
+    motion_model/param_motion_model_test.cpp
 )
 
 target_link_libraries(${TEST_APP_NAME} PRIVATE
