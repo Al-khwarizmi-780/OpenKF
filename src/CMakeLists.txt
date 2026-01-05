@@ -27,15 +27,21 @@ set(LIBRARY_SRC_FILES
 set(LIBRARY_HDR_FILES
     types.h
     util.h
+    # Kalman filter files.
     kalman_filter/kalman_filter.h
     kalman_filter/unscented_transform.h
     kalman_filter/unscented_kalman_filter.h
     kalman_filter/square_root_ukf.h
+    # Motion model files.
     motion_model/motion_model.h
     motion_model/ego_motion_model.h
     motion_model/cv_motion_model.h
     motion_model/ca_motion_model.h
     motion_model/ct_motion_model.h
+    # Measurement model files.
+    meas_model/meas_model.h
+    meas_model/range_bearing_meas_model.h
+    meas_model/bearing_meas_model.h
 )
 
 set(LIBRARY_NAME ${PROJECT_NAME})

@@ -14,6 +14,10 @@ template <class Derived, int32_t DIM_X>
 class MotionModel
 {
  public:
+  /// @brief Get the state space vector dimension
+  /// @return The state space vector dimension
+  int32_t getDimX() const { return DIM_X; }
+
   /// @brief Prediction motion model function that propagate the previous state
   /// to next state in time.
   /// @param vecX State space vector \vec{x}

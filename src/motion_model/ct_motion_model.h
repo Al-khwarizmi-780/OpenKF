@@ -44,10 +44,6 @@ class CtMotionModel : public MotionModel<CtMotionModel, DIM_X_CT>
   Matrix<DIM_X_CT, DIM_X_CT> getJacobianFk(Vector<DIM_X_CT> const& vecX,
                                            float32_t dt = 1.0F) const;
 
-  /// @brief Get state dimension
-  /// @return State dimension
-  static constexpr int32_t getStateDim() { return DIM_X_CT; }
-
   /// @brief Set velocity process noise standard deviation.
   /// @param sigmaV Velocity process noise standard deviation
   void setSigmaV(float32_t const sigmaV) { m_processNoiseVec[0] = sigmaV; }
