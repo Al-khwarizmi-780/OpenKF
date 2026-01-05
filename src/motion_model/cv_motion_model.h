@@ -15,7 +15,10 @@ static constexpr int32_t DIM_Q_CV{1};
 class CvMotionModel : public MotionModel<CvMotionModel, DIM_X_CV>
 {
  public:
-  CvMotionModel() {}
+  CvMotionModel(float32_t const processNoise = 1.0F)
+  {
+    m_processNoiseVec[0] = processNoise;
+  }
   ~CvMotionModel() {}
 
   /// @brief Prediction motion model function that propagate the previous state
@@ -43,12 +46,9 @@ class CvMotionModel : public MotionModel<CvMotionModel, DIM_X_CV>
   /// @return State dimension
   static constexpr int32_t getStateDim() { return DIM_X_CV; }
 
-  /// @brief Set process noise vector
-  /// @param processNoiseVec Process noise vector
-  void setProcessNoiseVector(Vector<DIM_Q_CV> const& processNoiseVec)
-  {
-    m_processNoiseVec = processNoiseVec;
-  }
+  /// @brief Set process noise standard deviation
+  /// @param sigma Process noise standard deviation
+  void setSigma(float32_t const sigma) { m_processNoiseVec[0] = sigma; }
 
   static constexpr int32_t IDX_PX{0};  //< Index for position x
   static constexpr int32_t IDX_PY{1};  //< Index for position y

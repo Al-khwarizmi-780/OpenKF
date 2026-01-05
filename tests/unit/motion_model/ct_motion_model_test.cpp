@@ -13,9 +13,8 @@ class CtMotionModelTest : public testing::Test
  protected:
   virtual void SetUp() override
   {
-    m_ctMotionModel.setProcessNoiseVector(
-        Vector<motionmodel::DIM_Q_CT>::Constant(0.5F));
-
+    m_ctMotionModel.setSigmaV(0.5F);
+    m_ctMotionModel.setSigmaOmega(0.5F);
     m_initState << 0.0F, 0.0F, 10.0F, static_cast<float32_t>(M_PI) / 4.0F,
         static_cast<float32_t>(M_PI) / 12.0F;  // 45° heading, 15°/s turn
   }

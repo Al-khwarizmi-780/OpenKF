@@ -13,9 +13,7 @@ class CvMotionModelTest : public testing::Test
  protected:
   virtual void SetUp() override
   {
-    m_cvMotionModel.setProcessNoiseVector(
-        Vector<motionmodel::DIM_Q_CV>::Constant(0.5F));
-
+    m_cvMotionModel.setSigma(0.5F);
     m_initialState << 10.0, 20.0, 5.0, -2.0;
   }
   virtual void TearDown() override {}
