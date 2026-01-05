@@ -26,9 +26,9 @@ TEST(MotionModelFactoryTest, CreateAndTestAllModels)
   m_ctState << 0.0F, 0.0F, 10.0F, static_cast<float32_t>(M_PI) / 4.0F,
       static_cast<float32_t>(M_PI) / 12.0F;
 
-  EXPECT_EQ(cv->getStateDim(), 4);
-  EXPECT_EQ(ca->getStateDim(), 6);
-  EXPECT_EQ(ctr->getStateDim(), 5);
+  EXPECT_EQ(cv->getDimX(), 4);
+  EXPECT_EQ(ca->getDimX(), 6);
+  EXPECT_EQ(ctr->getDimX(), 5);
 
   // Test that prediction doesn't crash for small dt
   EXPECT_NO_THROW(cv->f(m_cvState, 0.1F));
