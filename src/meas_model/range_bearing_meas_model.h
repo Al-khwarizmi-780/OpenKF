@@ -8,18 +8,18 @@ namespace kf
 {
 namespace measmodel
 {
-/// @brief Measurement space dimension for constant acceleration measurement
+/// @brief Measurement space dimension for range-bearing measurement
 /// model
 /// \vec{z}=[pos_x, pos_y]^T
 static constexpr int32_t DIM_Z_BEARING{2};
 
 template <int32_t DIM_X>
-class BearingMeasModel
-    : public MeasModel<BearingMeasModel, DIM_X, DIM_Z_BEARING>
+class RangeBearingMeasModel
+    : public MeasModel<RangeBearingMeasModel, DIM_X, DIM_Z_BEARING>
 {
  public:
-  BearingMeasModel(Vector<2> const& sensPos2D, float32_t const rangeSigma,
-                   float32_t const bearingSigma)
+  RangeBearingMeasModel(Vector<2> const& sensPos2D, float32_t const rangeSigma,
+                        float32_t const bearingSigma)
       : m_sensPos2D{sensPos2D}, m_rangeNoiseSigma{rangeSigma},
         m_bearingNoiseSigma{bearingSigma}
   {

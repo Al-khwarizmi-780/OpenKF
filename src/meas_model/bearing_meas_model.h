@@ -8,7 +8,7 @@ namespace kf
 {
 namespace measmodel
 {
-/// @brief Measurement space dimension for constant acceleration measurement
+/// @brief Measurement space dimension for bearing measurement
 /// model
 /// \vec{z}=[pos_x, pos_y]^T
 static constexpr int32_t DIM_Z_BEARING{2};
