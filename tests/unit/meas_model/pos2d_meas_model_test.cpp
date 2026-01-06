@@ -24,15 +24,16 @@ class Pos2DMeasModelTest : public testing::Test
   static constexpr int32_t DIM_Z{measmodel::DIM_Z_POS2D};
 
   Vector<DIM_X> m_initialState;
-  measmodel::Pos2dMeasModel<DIM_X> m_pos2DMeasModel;
+  Vector<2> const m_sensPos{1.0F, 2.0F};
+  measmodel::Pos2dMeasModel<DIM_X> m_pos2DMeasModel{m_sensPos};
 };
 
 TEST_F(Pos2DMeasModelTest, test_MeasurementFunction)
 {
   Vector<DIM_Z> const vecZMeas{m_pos2DMeasModel.h(m_initialState)};
 
-  EXPECT_DOUBLE_EQ(vecZMeas(0), 15.0);   // pos_x
-  EXPECT_DOUBLE_EQ(vecZMeas(1), -10.0);  // pos_y
+  EXPECT_DOUBLE_EQ(vecZMeas(0), 14.0);   // pos_x
+  EXPECT_DOUBLE_EQ(vecZMeas(1), -12.0);  // pos_y
 }
 
 TEST_F(Pos2DMeasModelTest, test_JacobianHk)

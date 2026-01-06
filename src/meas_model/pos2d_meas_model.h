@@ -19,7 +19,10 @@ class Pos2dMeasModel
     : public MeasModel<Pos2dMeasModel<DIM_X>, DIM_X, DIM_Z_POS2D>
 {
  public:
-  Pos2dMeasModel(float32_t const posSigma = 1.0F) : m_posSigma{posSigma} {}
+  Pos2dMeasModel(Vector<2> const& sensPos, float32_t const posSigma = 1.0F)
+      : m_sensPos{sensPos}, m_posSigma{posSigma}
+  {
+  }
   ~Pos2dMeasModel() {}
 
   static constexpr int32_t IDX_X_PX{0};  //< Index for position x in state
@@ -35,8 +38,8 @@ class Pos2dMeasModel
   Vector<DIM_Z_POS2D> h(Vector<DIM_X> const& vecX) const
   {
     Vector<DIM_Z_POS2D> vecZ;
-    vecZ(IDX_Z_PX) = vecX(IDX_X_PX);
-    vecZ(IDX_Z_PY) = vecX(IDX_X_PY);
+    vecZ(IDX_Z_PX) = vecX(IDX_X_PX) - m_sensPos(0);
+    vecZ(IDX_Z_PY) = vecX(IDX_X_PY) - m_sensPos(1);
     return vecZ;
   }
 
@@ -71,6 +74,7 @@ class Pos2dMeasModel
   void setPosSigma(float32_t const sigma) { m_posSigma = sigma; }
 
  private:
+  Vector<2> m_sensPos;   //< Sensor position in 2D space
   float32_t m_posSigma;  //< Measurement noise vector
 };
 }  // namespace measmodel
