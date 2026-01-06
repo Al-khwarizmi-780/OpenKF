@@ -15,16 +15,17 @@ static constexpr int32_t DIM_Z_BEARING{2};
 
 template <int32_t DIM_X>
 class RangeBearingMeasModel
-    : public MeasModel<RangeBearingMeasModel, DIM_X, DIM_Z_BEARING>
+    : public MeasModel<RangeBearingMeasModel<DIM_X>, DIM_X, DIM_Z_BEARING>
 {
  public:
-  RangeBearingMeasModel(Vector<2> const& sensPos2D, float32_t const rangeSigma,
-                        float32_t const bearingSigma)
-      : m_sensPos2D{sensPos2D}, m_rangeNoiseSigma{rangeSigma},
-        m_bearingNoiseSigma{bearingSigma}
+  RangeBearingMeasModel(Vector<2> const& sensPos2D,
+                        float32_t const rangeSigma = 1.0F,
+                        float32_t const bearingSigma = 1.0F)
+      : m_sensPos2D{sensPos2D}, m_rangeSigma{rangeSigma},
+        m_bearingSigma{bearingSigma}
   {
   }
-  ~BearingMeasModel() {}
+  ~RangeBearingMeasModel() {}
 
   static constexpr int32_t IDX_X_PX{0};  //< Index for position x in state
   static constexpr int32_t IDX_X_PY{1};  //< Index for position y in state
@@ -70,14 +71,13 @@ class RangeBearingMeasModel
   /// @return The measurement noise covariance R
   Matrix<DIM_Z_BEARING, DIM_Z_BEARING> getMeasurementNoiseCov() const
   {
-    float32_t const rangeNoiseSigma2{m_rangeNoiseSigma * m_rangeNoiseSigma};
-    float32_t const bearingNoiseSigma2{m_bearingNoiseSigma *
-                                       m_bearingNoiseSigma};
+    float32_t const rangeSigma2{m_rangeSigma * m_rangeSigma};
+    float32_t const bearingSigma2{m_bearingSigma * m_bearingSigma};
 
     Matrix<DIM_Z_BEARING, DIM_Z_BEARING> matR;
     matR.setZero();
-    matR(IDX_Z_RANGE, IDX_Z_RANGE) = rangeNoiseSigma2;
-    matR(IDX_Z_BEARING, IDX_Z_BEARING) = bearingNoiseSigma2;
+    matR(IDX_Z_RANGE, IDX_Z_RANGE) = rangeSigma2;
+    matR(IDX_Z_BEARING, IDX_Z_BEARING) = bearingSigma2;
     return matR;
   }
 
@@ -85,21 +85,20 @@ class RangeBearingMeasModel
   /// @param rangeSigma Range measurement noise standard deviation
   void setRangeNoiseSigma(float32_t const rangeSigma)
   {
-    m_rangeNoiseSigma = rangeSigma;
+    m_rangeSigma = rangeSigma;
   }
 
   /// @brief Set bearing noise standard deviation
   /// @param bearingSigma Bearing measurement noise standard deviation
   void setBearingNoiseSigma(float32_t const bearingSigma)
   {
-    m_bearingNoiseSigma = bearingSigma;
+    m_bearingSigma = bearingSigma;
   }
 
  private:
-  Vector<2> m_sensPos2D;        //< Sensor position in 2D
-  float32_t m_rangeNoiseSigma;  //< Range measurement noise standard deviation
-  float32_t
-      m_bearingNoiseSigma;  //< Bearing measurement noise standard deviation
+  Vector<2> m_sensPos2D;     //< Sensor position in 2D
+  float32_t m_rangeSigma;    //< Range measurement noise standard deviation
+  float32_t m_bearingSigma;  //< Bearing measurement noise standard deviation
 };
 }  // namespace measmodel
 

@@ -15,11 +15,12 @@ static constexpr int32_t DIM_Z_BEARING{2};
 
 template <int32_t DIM_X>
 class BearingMeasModel
-    : public MeasModel<BearingMeasModel, DIM_X, DIM_Z_BEARING>
+    : public MeasModel<BearingMeasModel<DIM_X>, DIM_X, DIM_Z_BEARING>
 {
  public:
-  BearingMeasModel(Vector<2> const& sensPos2D, float32_t const measNoise)
-      : m_sensPos2D{sensPos2D}, m_measNoiseSigma{measNoise}
+  BearingMeasModel(Vector<2> const& sensPos2D,
+                   float32_t const bearingSigma = 1.0F)
+      : m_sensPos2D{sensPos2D}, m_bearingNoiseSigma{bearingSigma}
   {
   }
   ~BearingMeasModel() {}
@@ -64,23 +65,21 @@ class BearingMeasModel
   /// @return The measurement noise covariance R
   Matrix<DIM_Z_BEARING, DIM_Z_BEARING> getMeasurementNoiseCov() const
   {
-    float32_t const measNoiseSigma2{m_measNoiseSigma * m_measNoiseSigma};
+    float32_t const bearingNoiseSigma2{m_bearingNoiseSigma *
+                                       m_bearingNoiseSigma};
     Matrix<DIM_Z_BEARING, DIM_Z_BEARING> matR;
     matR.setZero();
-    matR(IDX_Z_BEARING, IDX_Z_BEARING) = measNoiseSigma2;
+    matR(IDX_Z_BEARING, IDX_Z_BEARING) = bearingNoiseSigma2;
     return matR;
   }
 
-  /// @brief Set measurement noise standard deviation
-  /// @param sigma Measurement noise standard deviation
-  void setMeasurementNoiseSigma(float32_t const sigma)
-  {
-    m_measNoiseSigma = sigma;
-  }
+  /// @brief Set bearing noise standard deviation
+  /// @param sigma Bearing noise standard deviation
+  void setBearingSigma(float32_t const sigma) { m_bearingNoiseSigma = sigma; }
 
  private:
-  Vector<2> m_sensPos2D;       //< Sensor position in 2D
-  float32_t m_measNoiseSigma;  //< Measurement noise vector
+  Vector<2> m_sensPos2D;          //< Sensor position in 2D
+  float32_t m_bearingNoiseSigma;  //< Bearing measurement noise vector
 };
 }  // namespace measmodel
 

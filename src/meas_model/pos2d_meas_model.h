@@ -15,10 +15,11 @@ static constexpr int32_t DIM_Z_POS2D{2};
 /// @brief  measurement model
 /// @tparam DIM_X State space vector dimension \vec{x}=[pos_x, pos_y, ...]^T
 template <int32_t DIM_X>
-class Pos2dMeasModel : public MeasModel<Pos2dMeasModel, DIM_X, DIM_Z_POS2D>
+class Pos2dMeasModel
+    : public MeasModel<Pos2dMeasModel<DIM_X>, DIM_X, DIM_Z_POS2D>
 {
  public:
-  Pos2dMeasModel(float32_t const measNoise) : m_measNoiseSigma{measNoise} {}
+  Pos2dMeasModel(float32_t const posSigma = 1.0F) : m_posSigma{posSigma} {}
   ~Pos2dMeasModel() {}
 
   static constexpr int32_t IDX_X_PX{0};  //< Index for position x in state
@@ -57,23 +58,20 @@ class Pos2dMeasModel : public MeasModel<Pos2dMeasModel, DIM_X, DIM_Z_POS2D>
   /// @return The measurement noise covariance R
   Matrix<DIM_Z_POS2D, DIM_Z_POS2D> getMeasurementNoiseCov() const
   {
-    float32_t const measNoiseSigma2{m_measNoiseSigma * m_measNoiseSigma};
+    float32_t const posNoiseSigma2{m_posSigma * m_posSigma};
     Matrix<DIM_Z_POS2D, DIM_Z_POS2D> matR;
     matR.setZero();
-    matR(IDX_Z_PX, IDX_Z_PX) = measNoiseSigma2;
-    matR(IDX_Z_PY, IDX_Z_PY) = measNoiseSigma2;
+    matR(IDX_Z_PX, IDX_Z_PX) = posNoiseSigma2;
+    matR(IDX_Z_PY, IDX_Z_PY) = posNoiseSigma2;
     return matR;
   }
 
-  /// @brief Set measurement noise standard deviation
-  /// @param sigma Measurement noise standard deviation
-  void setMeasurementNoiseSigma(float32_t const sigma)
-  {
-    m_measNoiseSigma = sigma;
-  }
+  /// @brief Set position noise standard deviation
+  /// @param sigma Position noise standard deviation
+  void setPosSigma(float32_t const sigma) { m_posSigma = sigma; }
 
  private:
-  float32_t m_measNoiseSigma;  //< Measurement noise vector
+  float32_t m_posSigma;  //< Measurement noise vector
 };
 }  // namespace measmodel
 
