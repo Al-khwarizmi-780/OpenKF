@@ -8,15 +8,21 @@ jobs:
       matrix:
         path:
           - check: 'src'
-            exclude: 'third_party' # Exclude file paths containing "hello" or "world"
+            exclude: 'third_party'
           - check: 'tests'
-            exclude: ''            # Nothing to exclude
+            exclude: ''
     steps:
     - uses: actions/checkout@v3
-    - name: Run clang-format style check for C/C++/Protobuf programs.
-      uses: jidicula/clang-format-action@v4.11.0
-      with:
-        clang-format-version: '13'
-        check-path: ${{ matrix.path['check'] }}
-        exclude-regex: ${{ matrix.path['exclude'] }}
-        fallback-style: 'Microsoft' # optional
+    
+    - name: Install clang-format 21.1.0
+      run: |
+        wget https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.0/clang+llvm-21.1.0-x86_64-linux-gnu-ubuntu-22.04.tar.xz
+        tar -xf clang+llvm-21.1.0-x86_64-linux-gnu-ubuntu-22.04.tar.xz
+        sudo cp clang+llvm-21.1.0-x86_64-linux-gnu-ubuntu-22.04/bin/clang-format /usr/local/bin/
+        clang-format --version
+    
+    - name: Run clang-format check
+      run: |
+        find ${{ matrix.path.check }} -name "*.cpp" -o -name "*.hpp" -o -name "*.cc" -o -name "*.c" -o -name "*.h" -o -name "*.proto" | \
+          grep -v "${{ matrix.path.exclude }}" | \
+          xargs clang-format --dry-run --Werror --style=file --fallback-style=Microsoft
